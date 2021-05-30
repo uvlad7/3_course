@@ -1,0 +1,1 @@
+1. Перенести объявление функций потока перед main-ом, #include <windows.h> для функции Sleep (с большой буквы в windows), прописать #define HAVE_STRUCT_TIMESPEC, return 0 в функциях

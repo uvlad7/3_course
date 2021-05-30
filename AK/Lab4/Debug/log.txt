@@ -1,0 +1,11 @@
+Microsoft Windows [Version 10.0.18362.535]
+(c) Корпорация Майкрософт (Microsoft Corporation), 2019. Все права защищены.
+D:\3 course\AK\Lab4\Debug>mpiexec -n 1 Lab4.exe
+time = 125.225
+D:\3 course\AK\Lab4\Debug>mpiexec -n 2 Lab4.exe
+time = 70.4209
+D:\3 course\AK\Lab4\Debug>mpiexec -n 3 Lab4.exe
+time = 70.2475
+D:\3 course\AK\Lab4\Debug>mpiexec -n 4 Lab4.exe
+time = 57.0912
+  

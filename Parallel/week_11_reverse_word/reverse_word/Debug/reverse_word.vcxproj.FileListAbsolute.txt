@@ -1,0 +1,2 @@
+D:\3 course\Parallel\week_11_reverse_word\reverse_word\Debug\reverse_word.exe
+D:\3 course\Parallel\week_11_reverse_word\reverse_word\Debug\reverse_word.pdb

@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="eb43a691-c4d3-42bb-839e-eac437dcfe3a" name="Default Changelist" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="DatabaseView">
+    <option name="SHOW_INTERMEDIATE" value="true" />
+    <option name="GROUP_DATA_SOURCES" value="true" />
+    <option name="GROUP_SCHEMA" value="true" />
+    <option name="GROUP_CONTENTS" value="false" />
+    <option name="SORT_POSITIONED" value="false" />
+    <option name="SHOW_EMPTY_GROUPS" value="false" />
+    <option name="AUTO_SCROLL_FROM_SOURCE" value="false" />
+    <option name="HIDDEN_KINDS">
+      <set />
+    </option>
+    <expand>
+      <path>
+        <item name="Database" type="3277223f:DatabaseStructure$DbRootGroup" />
+        <item name="@localhost" type="feb32156:DbDataSourceImpl" />
+      </path>
+      <path>
+        <item name="Database" type="3277223f:DatabaseStructure$DbRootGroup" />
+        <item name="@localhost" type="feb32156:DbDataSourceImpl" />
+        <item name="schemas" type="d4e8921:DatabaseStructure$FamilyGroup" />
+      </path>
+      <path>
+        <item name="Database" type="3277223f:DatabaseStructure$DbRootGroup" />
+        <item name="@localhost" type="feb32156:DbDataSourceImpl" />
+        <item name="schemas" type="d4e8921:DatabaseStructure$FamilyGroup" />
+        <item name="data: schema" type="76f4a085:MysqlImplModel$Schema" />
+      </path>
+      <path>
+        <item name="Database" type="3277223f:DatabaseStructure$DbRootGroup" />
+        <item name="@localhost" type="feb32156:DbDataSourceImpl" />
+        <item name="schemas" type="d4e8921:DatabaseStructure$FamilyGroup" />
+        <item name="data: schema" type="76f4a085:MysqlImplModel$Schema" />
+        <item name="train: table" type="285a2a93:MysqlImplModel$Table" />
+      </path>
+    </expand>
+    <select />
+  </component>
+  <component name="JupyterTrust" id="d997fa2a-3a6a-4d90-b992-0111e2a5b531" />
+  <component name="ProjectId" id="1VNzgHdiYee9dPafKQ195nWwRFr" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showExcludedFiles" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="DatabaseDriversLRU" value="mysql" />
+    <property name="Downloaded.Files.Path.Enabled" value="false" />
+    <property name="Repository.Attach.Annotations" value="false" />
+    <property name="Repository.Attach.JavaDocs" value="false" />
+    <property name="Repository.Attach.Sources" value="false" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="aspect.path.notification.shown" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.tslint" value="true" />
+    <property name="node.js.path.for.package.eslint" value="project" />
+    <property name="node.js.path.for.package.tslint" value="project" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
+    <property name="project.structure.last.edited" value="Libraries" />
+    <property name="project.structure.proportion" value="0.15" />
+    <property name="project.structure.side.proportion" value="0.30114943" />
+    <property name="settings.editor.selected.configurable" value="SQL Dialects" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\3 course\Java\Lab7\res" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="Main" type="Application" factoryName="Application" temporary="true">
+      <option name="MAIN_CLASS_NAME" value="Main" />
+      <module name="Lab7" />
+      <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$" />
+      <RunnerSettings RunnerId="Run" />
+      <ConfigurationWrapper RunnerId="Run" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.Main" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="ServiceViewManager">
+    <option name="viewStates">
+      <list>
+        <serviceView>
+          <treeState>
+            <expand />
+            <select />
+          </treeState>
+        </serviceView>
+      </list>
+    </option>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="eb43a691-c4d3-42bb-839e-eac437dcfe3a" name="Default Changelist" comment="" />
+      <created>1577108449943</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1577108449943</updated>
+      <workItem from="1577108452370" duration="13005000" />
+      <workItem from="1578520638744" duration="585000" />
+      <workItem from="1583418941664" duration="1378000" />
+      <workItem from="1586024324461" duration="7938000" />
+      <workItem from="1586043886475" duration="7111000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state width="1323" height="102" key="GridCell.Tab.0.bottom" timestamp="1583420340971">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state width="1323" height="102" key="GridCell.Tab.0.bottom/0.0.1366.728@0.0.1366.728" timestamp="1583420340971" />
+    <state width="1323" height="102" key="GridCell.Tab.0.center" timestamp="1583420340971">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state width="1323" height="102" key="GridCell.Tab.0.center/0.0.1366.728@0.0.1366.728" timestamp="1583420340971" />
+    <state width="1323" height="102" key="GridCell.Tab.0.left" timestamp="1583420340971">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state width="1323" height="102" key="GridCell.Tab.0.left/0.0.1366.728@0.0.1366.728" timestamp="1583420340971" />
+    <state width="1323" height="102" key="GridCell.Tab.0.right" timestamp="1583420340971">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state width="1323" height="102" key="GridCell.Tab.0.right/0.0.1366.728@0.0.1366.728" timestamp="1583420340971" />
+    <state width="1323" height="102" key="GridCell.Tab.1.bottom" timestamp="1583420340971">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state width="1323" height="102" key="GridCell.Tab.1.bottom/0.0.1366.728@0.0.1366.728" timestamp="1583420340971" />
+    <state width="1323" height="102" key="GridCell.Tab.1.center" timestamp="1583420340971">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state width="1323" height="102" key="GridCell.Tab.1.center/0.0.1366.728@0.0.1366.728" timestamp="1583420340971" />
+    <state width="1323" height="102" key="GridCell.Tab.1.left" timestamp="1583420340971">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state width="1323" height="102" key="GridCell.Tab.1.left/0.0.1366.728@0.0.1366.728" timestamp="1583420340971" />
+    <state width="1323" height="102" key="GridCell.Tab.1.right" timestamp="1583420340971">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state width="1323" height="102" key="GridCell.Tab.1.right/0.0.1366.728@0.0.1366.728" timestamp="1583420340971" />
+    <state x="163" y="0" key="SettingsEditor" timestamp="1586037312286">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state x="163" y="0" key="SettingsEditor/0.0.1366.728@0.0.1366.728" timestamp="1586037312286" />
+    <state x="379" y="96" width="607" height="536" key="find.popup" timestamp="1583419442678">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state x="379" y="96" width="607" height="536" key="find.popup/0.0.1366.728@0.0.1366.728" timestamp="1583419442678" />
+  </component>
+</project>

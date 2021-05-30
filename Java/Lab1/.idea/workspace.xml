@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ArtifactsWorkspaceSettings">
+    <artifacts-to-build>
+      <artifact name="Lab1" />
+    </artifacts-to-build>
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="25dd3547-8bea-4f08-8a34-d2bee2078bf9" name="Default Changelist" comment="" />
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="DatabaseView">
+    <option name="SHOW_INTERMEDIATE" value="true" />
+    <option name="GROUP_DATA_SOURCES" value="true" />
+    <option name="GROUP_SCHEMA" value="true" />
+    <option name="GROUP_CONTENTS" value="false" />
+    <option name="SORT_POSITIONED" value="false" />
+    <option name="SHOW_EMPTY_GROUPS" value="false" />
+    <option name="AUTO_SCROLL_FROM_SOURCE" value="false" />
+    <option name="HIDDEN_KINDS">
+      <set />
+    </option>
+    <expand />
+    <select />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="JavaFXApplication" />
+        <option value="package-info" />
+        <option value="CSS File" />
+        <option value="FxmlFile" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectId" id="1QQXHcWN8fXUhtWXL61kvQht2CO" />
+  <component name="PropertiesComponent">
+    <property name="Downloaded.Files.Path.Enabled" value="true" />
+    <property name="Repository.Attach.Annotations" value="true" />
+    <property name="Repository.Attach.JavaDocs" value="false" />
+    <property name="Repository.Attach.Sources" value="false" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="aspect.path.notification.shown" value="true" />
+    <property name="extract.method.default.visibility" value="private" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../IBA/spring" />
+    <property name="list.type.of.created.stylesheet" value="CSS" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.tslint" value="true" />
+    <property name="node.js.path.for.package.eslint" value="project" />
+    <property name="node.js.path.for.package.tslint" value="project" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
+    <property name="project.structure.last.edited" value="Artifacts" />
+    <property name="project.structure.proportion" value="0.15" />
+    <property name="project.structure.side.proportion" value="0.29642445" />
+    <property name="run.code.analysis.last.selected.profile" value="pProject Default" />
+    <property name="settings.editor.selected.configurable" value="preferences.editor" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+      <recent name="" />
+      <recent name="caps" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\3 course\Java\Lab1\res\bundles" />
+      <recent name="D:\3 course\Java\Lab1\res" />
+      <recent name="D:\3 course\Java\Lab1\src" />
+      <recent name="D:\3 course\Java\Lab1\src\bundles" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\3 course\Java\Lab1\res" />
+      <recent name="D:\3 course\Java\Lab1" />
+      <recent name="D:\3 course\Java\Lab1\res\icons" />
+      <recent name="D:\3 course\Java\Lab1\src\bundles" />
+      <recent name="D:\3 course\Java\Lab1\bundles" />
+    </key>
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager" selected="Application.Main">
+    <configuration name="Main" type="Application" factoryName="Application" temporary="true">
+      <option name="MAIN_CLASS_NAME" value="Main" />
+      <module name="Lab1" />
+      <RunnerSettings RunnerId="Run" />
+      <ConfigurationWrapper RunnerId="Run" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Lab1.jar" type="JarApplication" temporary="true">
+      <option name="JAR_PATH" value="$PROJECT_DIR$/out/artifacts/Lab1/Lab1.jar" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="Application.Main" />
+      <item itemvalue="JAR Application.Lab1.jar" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.Main" />
+        <item itemvalue="JAR Application.Lab1.jar" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="25dd3547-8bea-4f08-8a34-d2bee2078bf9" name="Default Changelist" comment="" />
+      <created>1567548078870</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1567548078870</updated>
+      <workItem from="1567548081305" duration="598000" />
+      <workItem from="1567700877024" duration="328000" />
+      <workItem from="1567703850192" duration="873000" />
+      <workItem from="1567805141488" duration="1694000" />
+      <workItem from="1567845642717" duration="2539000" />
+      <workItem from="1567871740510" duration="34354000" />
+      <workItem from="1567971338215" duration="489000" />
+      <workItem from="1567972252315" duration="4490000" />
+      <workItem from="1567979344636" duration="14708000" />
+      <workItem from="1568247509293" duration="104000" />
+      <workItem from="1568248689954" duration="3306000" />
+      <workItem from="1568307695217" duration="8869000" />
+      <workItem from="1568368003977" duration="1666000" />
+      <workItem from="1568375807970" duration="37615000" />
+      <workItem from="1568634255808" duration="1175000" />
+      <workItem from="1568640966894" duration="207000" />
+      <workItem from="1568641219422" duration="73930000" />
+      <workItem from="1569095048830" duration="1937000" />
+      <workItem from="1569098776746" duration="2855000" />
+      <workItem from="1569198921757" duration="18946000" />
+      <workItem from="1569476954878" duration="645000" />
+      <workItem from="1569682334346" duration="190000" />
+      <workItem from="1570278318990" duration="28000" />
+      <workItem from="1570278569602" duration="77000" />
+      <workItem from="1571576940138" duration="112000" />
+      <workItem from="1571663783475" duration="167000" />
+      <workItem from="1572799338498" duration="599000" />
+      <workItem from="1572856428934" duration="589000" />
+      <workItem from="1573908852928" duration="418000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+</project>

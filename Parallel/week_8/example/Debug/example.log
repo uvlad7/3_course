@@ -1,0 +1,3 @@
+﻿  example.cpp
+D:\3 course\Parallel\week_8\example\example.cpp(63,9): warning C4101: 'rc': unreferenced local variable
+  example.vcxproj -> D:\3 course\Parallel\week_8\example\Debug\example.exe

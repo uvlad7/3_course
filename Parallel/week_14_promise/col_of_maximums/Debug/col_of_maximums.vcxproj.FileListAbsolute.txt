@@ -1,0 +1,2 @@
+D:\3 course\Parallel\week_14_promise\col_of_maximums\Debug\col_of_maximums.exe
+D:\3 course\Parallel\week_14_promise\col_of_maximums\Debug\col_of_maximums.pdb

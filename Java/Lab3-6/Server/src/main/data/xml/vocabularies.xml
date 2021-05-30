@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<vocabularies>
+    <vocabulary>
+        <explanatory>false</explanatory>
+        <id>1</id>
+        <name>Русско-Английский</name>
+    </vocabulary>
+    <vocabulary>
+        <explanatory>true</explanatory>
+        <id>2</id>
+        <name>Толковый</name>
+    </vocabulary>
+</vocabularies>

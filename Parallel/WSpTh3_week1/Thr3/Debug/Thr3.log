@@ -1,0 +1,6 @@
+﻿cl : command line warning D9035: option 'Gm' has been deprecated and will be removed in a future release
+  Thr3.cpp
+D:\3 course\Parallel\WSpTh3\Thr3\Thr3.cpp(411,8): warning C4101: 'szRetRes': unreferenced local variable
+D:\3 course\Parallel\WSpTh3\Thr3\Thr3.cpp(412,8): warning C4101: 'dwRet': unreferenced local variable
+D:\3 course\Parallel\WSpTh3\Thr3\Thr3.cpp(479,2): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  Thr3.vcxproj -> D:\3 course\Parallel\WSpTh3\Thr3\.\Debug\Thr3.exe

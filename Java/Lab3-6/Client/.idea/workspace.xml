@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="875d689b-3b02-4458-a4fe-573d97b69e5b" name="Default Changelist" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="importingSettings">
+      <MavenImportingSettings>
+        <option name="importAutomatically" value="true" />
+      </MavenImportingSettings>
+    </option>
+  </component>
+  <component name="ProjectId" id="1aXozYGlXoPWHxU7t6H5a2NerlX" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showExcludedFiles" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="aspect.path.notification.shown" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../Lab1-2" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.tslint" value="true" />
+    <property name="node.js.path.for.package.eslint" value="project" />
+    <property name="node.js.path.for.package.tslint" value="project" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
+    <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
+    <property name="nodejs_npm_path_reset_for_default_project" value="true" />
+    <property name="project.structure.last.edited" value="Project" />
+    <property name="project.structure.proportion" value="0.0" />
+    <property name="project.structure.side.proportion" value="0.0" />
+    <property name="settings.editor.selected.configurable" value="editor.preferences.import" />
+  </component>
+  <component name="RunManager">
+    <configuration name="Main" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" value="sample.Main" />
+      <module name="Client" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="ServiceViewManager">
+    <option name="viewStates">
+      <list>
+        <serviceView>
+          <treeState>
+            <expand />
+            <select />
+          </treeState>
+        </serviceView>
+      </list>
+    </option>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="875d689b-3b02-4458-a4fe-573d97b69e5b" name="Default Changelist" comment="" />
+      <created>1586891562442</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1586891562442</updated>
+      <workItem from="1586891564377" duration="18048000" />
+      <workItem from="1587126782815" duration="1924000" />
+      <workItem from="1587134228358" duration="778000" />
+      <workItem from="1587480629447" duration="734000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="137" y="20" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1586892680397">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state x="137" y="20" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1366.728@0.0.1366.728" timestamp="1586892680397" />
+    <state x="412" y="149" key="#com.intellij.ide.util.TreeClassChooserDialog" timestamp="1586892675455">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state x="412" y="149" key="#com.intellij.ide.util.TreeClassChooserDialog/0.0.1366.728@0.0.1366.728" timestamp="1586892675455" />
+    <state width="449" height="466" key="DebuggerActiveHint" timestamp="1586909730412">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state width="449" height="466" key="DebuggerActiveHint/0.0.1366.728@0.0.1366.728" timestamp="1586909730412" />
+    <state x="463" y="120" key="FileChooserDialogImpl" timestamp="1586892427927">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state x="463" y="120" key="FileChooserDialogImpl/0.0.1366.728@0.0.1366.728" timestamp="1586892427927" />
+    <state width="1323" height="102" key="GridCell.Tab.0.bottom" timestamp="1587135046338">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state width="1323" height="102" key="GridCell.Tab.0.bottom/0.0.1366.728@0.0.1366.728" timestamp="1587135046338" />
+    <state width="1323" height="102" key="GridCell.Tab.0.center" timestamp="1587135046338">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state width="1323" height="102" key="GridCell.Tab.0.center/0.0.1366.728@0.0.1366.728" timestamp="1587135046338" />
+    <state width="1323" height="102" key="GridCell.Tab.0.left" timestamp="1587135046338">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state width="1323" height="102" key="GridCell.Tab.0.left/0.0.1366.728@0.0.1366.728" timestamp="1587135046337" />
+    <state width="1323" height="102" key="GridCell.Tab.0.right" timestamp="1587135046338">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state width="1323" height="102" key="GridCell.Tab.0.right/0.0.1366.728@0.0.1366.728" timestamp="1587135046338" />
+    <state width="1323" height="102" key="GridCell.Tab.1.bottom" timestamp="1587135046339">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state width="1323" height="102" key="GridCell.Tab.1.bottom/0.0.1366.728@0.0.1366.728" timestamp="1587135046339" />
+    <state width="1323" height="102" key="GridCell.Tab.1.center" timestamp="1587135046339">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state width="1323" height="102" key="GridCell.Tab.1.center/0.0.1366.728@0.0.1366.728" timestamp="1587135046339" />
+    <state width="1323" height="102" key="GridCell.Tab.1.left" timestamp="1587135046338">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state width="1323" height="102" key="GridCell.Tab.1.left/0.0.1366.728@0.0.1366.728" timestamp="1587135046338" />
+    <state width="1323" height="102" key="GridCell.Tab.1.right" timestamp="1587135046339">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state width="1323" height="102" key="GridCell.Tab.1.right/0.0.1366.728@0.0.1366.728" timestamp="1587135046339" />
+    <state x="379" y="96" width="607" height="536" key="find.popup" timestamp="1586895781280">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state x="379" y="96" width="607" height="536" key="find.popup/0.0.1366.728@0.0.1366.728" timestamp="1586895781280" />
+  </component>
+</project>

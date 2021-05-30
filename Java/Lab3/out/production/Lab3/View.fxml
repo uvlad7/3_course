@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.input.*?>
+<?import javafx.scene.layout.*?>
+<?import java.lang.Double?>
+<?import java.lang.Integer?>
+<?import javafx.scene.text.TextFlow?>
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="View"
+      prefHeight="600.0" prefWidth="900.0">
+    <MenuBar fx:id="menuBar">
+        <Menu text="%file">
+            <MenuItem fx:id="create" text="%create" onAction="#actionPerformed">
+                <accelerator>
+                    <KeyCombination fx:value="Shortcut+N"/>
+                </accelerator>
+                <graphic>
+                    <ImageView>
+                        <Image url="icons/create.png"/>
+                    </ImageView>
+                </graphic>
+            </MenuItem>
+            <MenuItem fx:id="open" text="%open" onAction="#actionPerformed">
+                <accelerator>
+                    <KeyCombination fx:value="Shortcut+O"/>
+                </accelerator>
+                <graphic>
+                    <ImageView>
+                        <Image url="icons/open.png"/>
+                    </ImageView>
+                </graphic>
+            </MenuItem>
+            <SeparatorMenuItem/>
+            <MenuItem fx:id="save" text="%save" onAction="#actionPerformed">
+                <accelerator>
+                    <KeyCombination fx:value="Shortcut+S"/>
+                </accelerator>
+                <graphic>
+                    <ImageView>
+                        <Image url="icons/save.png"/>
+                    </ImageView>
+                </graphic>
+            </MenuItem>
+            <MenuItem fx:id="saveAs" text="%saveAs" onAction="#actionPerformed">
+                <accelerator>
+                    <KeyCombination fx:value="Shortcut+Shift+S"/>
+                </accelerator>
+                <graphic>
+                    <ImageView>
+                        <Image url="icons/saveAs.png"/>
+                    </ImageView>
+                </graphic>
+            </MenuItem>
+        </Menu>
+        <Menu text="%edit">
+            <MenuItem fx:id="undo" text="%undo" onAction="#actionPerformed" disable="true">
+                <accelerator>
+                    <KeyCombination fx:value="Shortcut+Z"/>
+                </accelerator>
+                <graphic>
+                    <ImageView>
+                        <Image url="icons/undo.png"/>
+                    </ImageView>
+                </graphic>
+            </MenuItem>
+            <MenuItem fx:id="redo" text="%redo" onAction="#actionPerformed" disable="true">
+                <accelerator>
+                    <KeyCombination fx:value="Shortcut+Y"/>
+                </accelerator>
+                <graphic>
+                    <ImageView>
+                        <Image url="icons/redo.png"/>
+                    </ImageView>
+                </graphic>
+            </MenuItem>
+        </Menu>
+        <Menu text="%format">
+            <CheckMenuItem fx:id="wrapText" text="%wrapText"/>
+            <MenuItem fx:id="font" text="%font" onAction="#actionPerformed"/>
+            <SeparatorMenuItem/>
+            <MenuItem fx:id="settings" text="%settings" onAction="#actionPerformed">
+                <accelerator>
+                    <KeyCombination fx:value="Shortcut+Alt+S"/>
+                </accelerator>
+                <graphic>
+                    <ImageView>
+                        <Image url="icons/settings.png"/>
+                    </ImageView>
+                </graphic>
+            </MenuItem>
+        </Menu>
+    </MenuBar>
+    <HBox>
+        <Button fx:id="run" onAction="#actionPerformed">
+            <graphic>
+                <ImageView>
+                    <Image url="icons/run.png"/>
+                </ImageView>
+            </graphic>
+        </Button>
+        <Button fx:id="stop" onAction="#actionPerformed" disable="true">
+            <graphic>
+                <ImageView>
+                    <Image url="icons/stop.png"/>
+                </ImageView>
+            </graphic>
+        </Button>
+    </HBox>
+    <AnchorPane>
+        <prefHeight>
+            <Integer fx:constant="MAX_VALUE"/>
+        </prefHeight>
+        <SplitPane fx:id="pane" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0"
+                   AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0"
+                   orientation="VERTICAL">
+            <TextArea fx:id="textArea" SplitPane.resizableWithParent="true"/>
+            <TextFlow fx:id="output" SplitPane.resizableWithParent="true"/>
+        </SplitPane>
+    </AnchorPane>
+</VBox>

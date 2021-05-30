@@ -1,0 +1,70 @@
+[
+  {
+    "id": 2,
+    "word": {
+      "id": 3,
+      "word": "Змея"
+    },
+    "word2": {
+      "id": 4,
+      "word": "Snake"
+    },
+    "vocabulary": {
+      "id": 1,
+      "name": "Русско-английский",
+      "isExplanatory": false
+    },
+    "isExplanatory": false
+  },
+  {
+    "id": 3,
+    "word": {
+      "id": 1,
+      "word": "Собака"
+    },
+    "word2": {
+      "id": 5,
+      "word": "Домашний волчара"
+    },
+    "vocabulary": {
+      "id": 2,
+      "name": "Толковый словарь русского языка",
+      "isExplanatory": true
+    },
+    "isExplanatory": true
+  },
+  {
+    "id": 4,
+    "word": {
+      "id": 5,
+      "word": "Кот"
+    },
+    "word2": {
+      "id": 6,
+      "word": "Просто кот"
+    },
+    "vocabulary": {
+      "id": 2,
+      "name": "Толковый словарь русского языка",
+      "isExplanatory": true
+    },
+    "isExplanatory": true
+  },
+  {
+    "id": 5,
+    "word": {
+      "id": 5,
+      "word": "Кот"
+    },
+    "word2": {
+      "id": 7,
+      "word": "Cat"
+    },
+    "vocabulary": {
+      "id": 1,
+      "name": "Русско-английский",
+      "isExplanatory": false
+    },
+    "isExplanatory": false
+  }
+]

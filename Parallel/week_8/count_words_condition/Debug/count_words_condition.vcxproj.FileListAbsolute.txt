@@ -1,0 +1,2 @@
+D:\3 course\Parallel\week_8\count_words_condition\Debug\count_words_condition.exe
+D:\3 course\Parallel\week_8\count_words_condition\Debug\count_words_condition.pdb

@@ -1,0 +1,6 @@
+1. Разобрал примеры
+
+2. Эксперименты с точностью определения времени:
+	Время, затрачиваемое на создание потоков, в 1_3 с помощью GetTickCount() равно 0, с помощью QueryPerformanceCounter() и QueryPerformanceFrequency() - 2.7 мс.
+
+5. GetTickCount(), QueryPerformanceCounter(), clock() - процессорное время, std::chrono::system_clock::now().

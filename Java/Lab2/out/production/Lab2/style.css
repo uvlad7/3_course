@@ -1,0 +1,36 @@
+.mnemonic-underline {
+    -fx-stroke: -fx-text-base-color;
+}
+
+.table-view:focused {
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+/*.table-row-cell {
+    -fx-cell-size: 50px;
+}*/
+
+.toggle-switch .thumb-area{
+    -fx-background-color: linear-gradient(to bottom, -fx-text-box-border 80%, -fx-text-box-border 70%), #aeaeae;-fx-background-insets: 0, 1;
+}
+
+.toggle-switch:selected .thumb-area{
+    -fx-background-color: linear-gradient(to bottom, -fx-text-box-border 80%, -fx-text-box-border 70%),
+    linear-gradient(to bottom, #0b99c9 70%, #0b99c9);
+
+}
+
+.combo-box-popup .list-view .list-cell:filled:selected
+{
+    -fx-background-color: rgba(75, 110, 175, 0.5);
+}
+
+.combo-box-popup .list-view .list-cell:filled:selected:hover
+{
+    -fx-background-color:  -fx-selection-bar;
+}
+
+.custom-menu-item >.label {
+    -fx-text-fill: -fx-dark-text-color;
+}

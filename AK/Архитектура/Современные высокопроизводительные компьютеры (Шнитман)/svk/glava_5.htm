@@ -1,0 +1,938 @@
+<HTML>
+
+<HEAD>
+<TITLE>Современные высокопроизводительные компьютеры - Конвейерная организация</TITLE>
+</head>
+
+<body bgcolor="#FFFFFF" link="#950995" vlink="#650065" alink="#800000" text="#000000">
+
+<H2><A NAME = "Конвейерная организация">Конвейерная организация</A></H2>
+
+<UL>
+
+    <LI><A HREF = "#Конвейерная организация">Конвейерная организация</A>
+
+    <UL TYPE = disc>
+
+        <LI><A HREF = "#Что такое конвейерная обработка">Что такое конвейерная обработка</A>
+
+        <LI><A HREF = "#Простейшая организация конвейера и оценка его производительности">Простейшая организация конвейера и оценка его производительности</A>
+
+        <LI><A HREF = "#Структурные конфликты и способы их минимизации">Структурные конфликты и способы их минимизации</A>
+
+        <LI><A HREF = "#Конфликты по данным, остановы конвейера и реализация механизма обходов">Конфликты по данным, остановы конвейера и реализация механизма обходов</A>
+
+        <LI><A HREF = "#Сокращение потерь на выполнение команд перехода и минимизация конфликтов по управлению">Сокращение потерь на выполнение команд перехода и минимизация конфликтов по управлению</A>
+
+        <LI><A HREF = "#Проблемы реализации точного прерывания в конвейере">Проблемы реализации точного прерывания в конвейере</A>
+
+        <LI><A HREF = "#Обработка многотактных операций и механизмы обходов в длинных конвейерах">Обработка многотактных операций и механизмы обходов в длинных конвейерах</A>
+
+    </UL>
+
+</UL>
+
+<H3><A NAME = "Что такое конвейерная обработка">Что такое конвейерная обработка</A></H3>
+
+<P>
+
+Разработчики архитектуры компьютеров издавна прибегали к методам проектирования, известным под общим названием &quot;совмещение операций&quot;, при котором аппаратура компьютера в любой момент времени выполняет одновременно более одной базовой операции. Этот общий метод включает два понятия: параллелизм и конвейеризацию. Хотя у них много общего и их зачастую трудно различать на практике, эти термины отражают два совершенно различных подхода. При параллелизме совмещение операций достигается путем воспроизведения в нескольких копиях аппаратной структуры. Высокая производительность достигается за счет одновременной работы всех элементов структур, осуществляющих решение различных частей задачи.
+
+<P>
+
+Конвейеризация (или конвейерная обработка) в общем случае основана на разделении подлежащей исполнению функции на более мелкие части, называемые ступенями, и выделении для каждой из них отдельного блока аппаратуры. Так обработку любой машинной команды можно разделить на несколько этапов (несколько ступеней), организовав передачу данных от одного этапа к следующему. При этом конвейерную обработку можно использовать для совмещения этапов выполнения разных команд. Производительность при этом возрастает благодаря тому, что одновременно на различных ступенях конвейера выполняются несколько команд. Конвейерная обработка такого рода широко применяется во всех современных быстродействующих процессорах.
+
+<H3><A NAME = "Простейшая организация конвейера и оценка его производительности">Простейшая организация конвейера и оценка его производительности</A></H3>
+
+<P>
+
+Для иллюстрации основных принципов построения процессоров мы будем использовать простейшую архитектуру, содержащую 32 целочисленных регистра общего назначения (R0,...,R31), 32 регистра плавающей точки (F0,...,F31) и счетчик команд PC. Будем считать, что набор команд нашего процессора включает типичные арифметические и логические операции, операции с плавающей точкой, операции пересылки данных, операции управления потоком команд и системные операции. В арифметических командах используется трехадресный формат, типичный для RISC-процессоров, а для обращения к памяти используются операции загрузки и записи содержимого регистров в память.
+
+<P>
+
+Выполнение типичной команды можно разделить на следующие этапы:
+
+<UL TYPE = disc>
+
+<LI>выборка команды - IF (по адресу, заданному счетчиком команд, из памяти извлекается команда);
+
+<LI>декодирование команды / выборка операндов из регистров - ID;
+
+<LI>выполнение операции / вычисление эффективного адреса памяти - EX;
+
+<LI>обращение к памяти - MEM;
+
+<LI>запоминание результата - WB.
+
+</UL>
+
+<P>
+
+На рис. 5.1 представлена схема простейшего процессора, выполняющего указанные выше этапы выполнения команд без совмещения. Чтобы конвейеризовать эту схему, мы можем просто разбить выполнение команд на указанные выше этапы, отведя для выполнения каждого этапа один такт синхронизации, и начинать в каждом такте выполнение новой команды. Естественно, для хранения промежуточных результатов каждого этапа необходимо использовать регистровые станции. На рис. 5.2 показана схема процессора с промежуточными регистровыми станциями, которые обеспечивают передачу данных и управляющих сигналов с одной ступени конвейера на следующую. Хотя общее время выполнения одной команды в таком конвейере будет составлять пять тактов, в каждом такте аппаратура будет выполнять в совмещенном режиме пять различных команд.
+
+<P>
+
+Работу конвейера можно условно представить в виде сдвинутых во времени схем процессора (рис. 5.3). Этот рисунок хорошо отражает совмещение во времени выполнения различных этапов команд. Однако чаще для представления работы конвейера используются временные диаграммы (рис. 5.4), на которых обычно изображаются выполняемые команды, номера тактов и этапы выполнения команд.
+
+<P>
+
+Конвейеризация увеличивает пропускную способность процессора (количество команд, завершающихся в единицу времени), но она не сокращает время выполнения отдельной команды. В действительности, она даже несколько увеличивает время выполнения каждой команды из-за накладных расходов, связанных с управлением регистровыми станциями. Однако увеличение пропускной способности означает, что программа будет выполняться быстрее по сравнению с простой неконвейерной схемой.
+
+<P>
+
+Тот факт, что время выполнения каждой команды в конвейере не уменьшается, накладывает некоторые ограничения на практическую длину конвейера. Кроме ограничений, связанных с задержкой конвейера, имеются также ограничения, возникающие в результате несбалансированности задержки на каждой его ступени и из-за накладных расходов на конвейеризацию. Частота синхронизации не может быть выше, а, следовательно, такт синхронизации не может быть меньше, чем время, необходимое для работы наиболее медленной ступени конвейера. Накладные расходы на организацию конвейера возникают из-за задержки сигналов в конвейерных регистрах (защелках) и из-за перекосов сигналов синхронизации. Конвейерные регистры к длительности такта добавляют время установки и задержку распространения сигналов. В предельном случае длительность такта можно уменьшить до суммы накладных расходов и перекоса сигналов синхронизации, однако при этом в такте не останется времени для выполнения полезной работы по преобразованию информации.
+
+<P>
+
+В качестве примера рассмотрим неконвейерную машину с пятью этапами выполнения операций, которые имеют длительность 50, 50, 60, 50 и 50 нс соответственно (рис. 5.5). Пусть накладные расходы на организацию конвейерной обработки составляют 5 нс. Тогда среднее время выполнения команды в неконвейерной машине будет равно 260 нс. Если же используется конвейерная организация, длительность такта будет равна длительности самого медленного этапа обработки плюс накладные расходы, т.е. 65 нс. Это время соответствует среднему времени выполнения команды в конвейере. Таким образом, ускорение, полученное в результате конвейеризации, будет равно:
+
+<table>
+
+<tr><td align=left colspan= 112><B> Среднее время выполнения команды в неконвейерном режиме</B><br><B>Среднее время выполнения команды в неконвейерном режиме</B><td align=center colspan= 7><B>=</B><td align=center colspan= 15><B>260</B><br><B>65</B><td align=center colspan= 7><B>=</B><td  colspan= 10><B>4</B>
+
+</table>
+
+<P>
+
+Конвейеризация эффективна только тогда, когда загрузка конвейера близка к полной, а скорость подачи новых команд и операндов соответствует максимальной производительности конвейера. Если произойдет задержка, то параллельно будет выполняться меньше операций и суммарная производительность снизится. Такие задержки могут возникать в результате возникновения конфликтных ситуаций. В следующих разделах будут рассмотрены различные типы конфликтов, возникающие при выполнении команд в конвейере, и способы их разрешения.
+
+<P ALIGN = center>
+
+<CENTER><IMG SRC = "img00003.gif" BORDER = 1 WIDTH= 108%></CENTER>
+
+
+
+<P ALIGN = center>
+
+<I>Рис. 5.3. Представление о работе конвейера</I>
+
+<table border=1>
+
+<tr><td align=left colspan= 29><B>Номер команды</B><td align=center colspan= 131><B>Номер такта</B>
+
+<tr><td align=left colspan= 29><pre> </pre><td align=center colspan= 14><B>1</B><td align=center colspan= 14><B>2</B><td align=center colspan= 14><B>3</B><td align=center colspan= 14><B>4</B><td align=center colspan= 14><B>5</B><td align=center colspan= 14><B>6</B><td align=center colspan= 14><B>7</B><td align=center colspan= 14><B>8</B><td align=center colspan= 19><B>9</B>
+
+<tr><td align=left colspan= 29>Команда i<td align=center colspan= 14>IF<td align=center colspan= 14>ID<td align=center colspan= 14>EX <td align=center colspan= 14>MEM<td align=center colspan= 14>WB<td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 19><pre> </pre>
+
+<tr><td align=left colspan= 29>Команда i+1<td align=center colspan= 14><pre> </pre><td align=center colspan= 14>IF<td align=center colspan= 14>ID<td align=center colspan= 14>EX<td align=center colspan= 14>MEM<td align=center colspan= 14>WB<td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 19><pre> </pre>
+
+<tr><td align=left colspan= 29>Команда i+2<td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14>IF<td align=center colspan= 14>ID<td align=center colspan= 14>EX<td align=center colspan= 14>MEM<td align=center colspan= 14>WB<td align=center colspan= 14><pre> </pre><td align=center colspan= 19><pre> </pre>
+
+<tr><td align=left colspan= 29>Команда i+3<td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14>IF<td align=center colspan= 14>ID<td align=center colspan= 14>EX<td align=center colspan= 14>MEM<td align=center colspan= 14>WB<td align=center colspan= 19><pre> </pre>
+
+<tr><td align=left colspan= 29>Команда i+4<td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14>IF<td align=center colspan= 14>ID<td align=center colspan= 14>EX<td align=center colspan= 14>MEM<td align=center colspan= 19>WB
+
+</table>
+
+<P ALIGN = center>
+
+<I>Рис. 5.4. Диаграмма работы простейшего конвейера</I>
+
+<P>
+
+<CENTER><IMG SRC = "img00004.gif" BORDER = 1 ></CENTER>
+
+
+
+<P ALIGN = center>
+
+<I>Рис. 5.5. Эффект конвейеризации при выполнении 3-х команд - четырехкратное ускорение</I>
+
+<P>
+
+При реализации конвейерной обработки возникают ситуации, которые препятствуют выполнению очередной команды из потока команд в предназначенном для нее такте. Такие ситуации называются конфликтами. Конфликты снижают реальную производительность конвейера, которая могла бы быть достигнута в идеальном случае. Существуют три класса конфликтов:
+
+<OL TYPE = 1>
+
+<LI>Структурные конфликты, которые возникают из-за конфликтов по ресурсам, когда аппаратные средства не могут поддерживать все возможные комбинации команд в режиме одновременного выполнения с совмещением.
+
+<LI>Конфликты по данным, возникающие в случае, когда выполнение одной команды зависит от результата выполнения предыдущей команды.
+
+<LI>Конфликты по управлению, которые возникают при конвейеризации команд переходов и других команд, которые изменяют значение счетчика команд.
+
+</OL>
+
+<P>
+
+Конфликты в конвейере приводят к необходимости приостановки выполнения команд (pipeline stall). Обычно в простейших конвейерах, если приостанавливается какая-либо команда, то все следующие за ней команды также приостанавливаются. Команды, предшествующие приостановленной, могут продолжать выполняться, но во время приостановки не выбирается ни одна новая команда.
+
+<H3><A NAME = "Структурные конфликты и способы их минимизации">Структурные конфликты и способы их минимизации</A></H3>
+
+<P>
+
+Совмещенный режим выполнения команд в общем случае требует конвейеризации функциональных устройств и дублирования ресурсов для разрешения всех возможных комбинаций команд в конвейере. Если какая-нибудь комбинация команд не может быть принята из-за конфликта по ресурсам, то говорят, что в машине имеется структурный конфликт. Наиболее типичным примером машин, в которых возможно появление структурных конфликтов, являются машины с не полностью конвейерными функциональными устройствами. Время работы такого устройства может составлять несколько тактов синхронизации конвейера. В этом случае последовательные команды, которые используют данное функциональное устройство, не могут поступать в него в каждом такте. Другая возможность появления структурных конфликтов связана с недостаточным дублированием некоторых ресурсов, что препятствует выполнению произвольной последовательности команд в конвейере без его приостановки. Например, машина может иметь только один порт записи в регистровый файл, но при определенных обстоятельствах конвейеру может потребоваться выполнить две записи в регистровый файл в одном такте. Это также приведет к структурному конфликту. Когда последовательность команд наталкивается на такой конфликт, конвейер приостанавливает выполнение одной из команд до тех пор, пока не станет доступным требуемое устройство.
+
+<P>
+
+Структурные конфликты возникают, например, и в машинах, в которых имеется единственный конвейер памяти для команд и данных (рис. 5.6). В этом случае, когда одна команда содержит обращение к памяти за данными, оно будет конфликтовать с выборкой более поздней команды из памяти. Чтобы разрешить эту ситуацию, можно просто приостановить конвейер на один такт, когда происходит обращение к памяти за данными. Подобная приостановка часто называются &quot;конвейерным пузырем&quot; (pipeline bubble) или просто пузырем, поскольку пузырь проходит по конвейеру, занимая место, но не выполняя никакой полезной работы.
+
+<P>
+
+При всех прочих обстоятельствах, машина без структурных конфликтов будет всегда иметь более низкий CPI (среднее число тактов на выдачу команды). Возникает вопрос: почему разработчики допускают наличие структурных конфликтов? Для этого имеются две причины: снижение стоимости и уменьшение задержки устройства. Конвейеризация всех функциональных устройств может оказаться слишком дорогой. Машины, допускающие два обращения к памяти в одном такте, должны иметь удвоенную пропускную способность памяти, например, путем организации раздельных кэшей для команд и данных. Аналогично, полностью конвейерное устройство деления с плавающей точкой требует огромного количества вентилей. Если структурные конфликты не будут возникать слишком часто, то может быть и не стоит платить за то, чтобы их обойти. Как правило, можно разработать неконвейерное, или не полностью конвейерное устройство, имеющее меньшую общую задержку, чем полностью конвейерное. Например, разработчики устройств с плавающей точкой компьютеров CDC7600 и MIPS R2010 предпочли иметь меньшую задержку выполнения операций вместо полной их конвейеризации.
+
+<P>
+
+<CENTER><IMG SRC = "img00005.gif" BORDER = 1 ></CENTER>
+
+
+
+<P ALIGN = center>
+
+<I>Рис. 5.6, а. Пример структурного конфликта при реализации памяти с одним портом</I>
+
+<table border=1>
+
+<tr><td align=left colspan= 33><B>Команда</B><td align=center colspan= 128><B>Номер такта</B>
+
+<tr><td align=left colspan= 33><pre> </pre><td align=center colspan= 12><B>1</B><td align=center colspan= 11><B>2</B><td align=center colspan= 13><B>3</B><td align=center colspan= 13><B>4</B><td align=center colspan= 13><B>5</B><td align=center colspan= 13><B>6</B><td align=center colspan= 13><B>7</B><td align=center colspan= 12><B>8</B><td align=center colspan= 14><B>9</B><td align=center colspan= 14><B>10</B>
+
+<tr><td align=left colspan= 33>Команда загрузки<td align=center colspan= 12>IF<td align=center colspan= 11>ID<td align=center colspan= 13>EX <td align=center colspan= 13>MEM<td align=center colspan= 13>WB<td align=center colspan= 13><pre> </pre><td align=center colspan= 13><pre> </pre><td align=center colspan= 12><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre>
+
+<tr><td align=left colspan= 33>Команда 1<td align=center colspan= 12><pre> </pre><td align=center colspan= 11>IF<td align=center colspan= 13>ID<td align=center colspan= 13>EX<td align=center colspan= 13>MEM<td align=center colspan= 13>WB<td align=center colspan= 13><pre> </pre><td align=center colspan= 12><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre>
+
+<tr><td align=left colspan= 33>Команда 2<td align=center colspan= 12><pre> </pre><td align=center colspan= 11><pre> </pre><td align=center colspan= 13>IF<td align=center colspan= 13>ID<td align=center colspan= 13>EX<td align=center colspan= 13>MEM<td align=center colspan= 13>WB<td align=center colspan= 12><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre>
+
+<tr><td align=left colspan= 33>Команда 3<td align=center colspan= 12><pre> </pre><td align=center colspan= 11><pre> </pre><td align=center colspan= 13><pre> </pre><td align=center colspan= 13>stall<td align=center colspan= 13>IF<td align=center colspan= 13>ID<td align=center colspan= 13>EX<td align=center colspan= 12>MEM<td align=center colspan= 14>WB<td align=center colspan= 14><pre> </pre>
+
+<tr><td align=left colspan= 33>Команда 4<td align=center colspan= 12><pre> </pre><td align=center colspan= 11><pre> </pre><td align=center colspan= 13><pre> </pre><td align=center colspan= 13><pre> </pre><td align=center colspan= 13><pre> </pre><td align=center colspan= 13>IF<td align=center colspan= 13>ID<td align=center colspan= 12>EX<td align=center colspan= 14>MEM<td align=center colspan= 14>WB
+
+<tr><td align=left colspan= 33>Команда 5<td align=center colspan= 12><pre> </pre><td align=center colspan= 11><pre> </pre><td align=center colspan= 13><pre> </pre><td align=center colspan= 13><pre> </pre><td align=center colspan= 13><pre> </pre><td align=center colspan= 13><pre> </pre><td align=center colspan= 13>IF<td align=center colspan= 12>ID<td align=center colspan= 14>EX<td align=center colspan= 14>MEM
+
+<tr><td align=left colspan= 33>Команда 6<td align=center colspan= 12><pre> </pre><td align=center colspan= 11><pre> </pre><td align=center colspan= 13><pre> </pre><td align=center colspan= 13><pre> </pre><td align=center colspan= 13><pre> </pre><td align=center colspan= 13><pre> </pre><td align=center colspan= 13><pre> </pre><td align=center colspan= 12>IF<td align=center colspan= 14>ID<td align=center colspan= 14>EX
+
+</table>
+
+<P ALIGN = center>
+
+<I>Рис. 5.6, б. Диаграмма работы конвейера при структурном конфликте</I>
+
+<H3><A NAME = "Конфликты по данным, остановы конвейера и реализация механизма обходов">Конфликты по данным, остановы конвейера и реализация механизма обходов</A></H3>
+
+<P>
+
+Одним из факторов, который оказывает существенное влияние на производительность конвейерных систем, являются межкомандные логические зависимости. Такие зависимости в большой степени ограничивают потенциальный параллелизм смежных операций, обеспечиваемый соответствующими аппаратными средствами обработки. Степень влияния этих зависимостей определяется как архитектурой процессора (в основном, структурой управления конвейером команд и параметрами функциональных устройств), так и характеристиками программ.
+
+<P>
+
+Конфликты по данным возникают в том случае, когда применение конвейерной обработки может изменить порядок обращений за операндами так, что этот порядок будет отличаться от порядка, который наблюдается при последовательном выполнении команд на неконвейерной машине. Рассмотрим конвейерное выполнение последовательности команд на рисунке 5.7.
+
+<table border=1>
+
+<tr><td align=left colspan= 10>ADD<td align=left colspan= 25>R1,R2,R3<td align=center colspan= 14>IF<td align=center colspan= 14>ID<td align=center colspan= 14>EX<td align=center colspan= 14>MEM<td align=center colspan= 14>WB<td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 10><pre> </pre>
+
+<tr><td align=left colspan= 10><pre> </pre><td align=left colspan= 25><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 10><pre> </pre>
+
+<tr><td align=left colspan= 10>SUB<td align=left colspan= 25>R4,R1,R5<td align=center colspan= 14><pre> </pre><td align=center colspan= 14>IF<td align=center colspan= 14>ID<td align=center colspan= 14>EX<td align=center colspan= 14>MEM<td align=center colspan= 14>WB<td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 10><pre> </pre>
+
+<tr><td align=left colspan= 10><pre> </pre><td align=left colspan= 25><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 10><pre> </pre>
+
+<tr><td align=left colspan= 10>AND<td align=left colspan= 25>R6,R1,R7<td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14>IF<td align=center colspan= 14>ID<td align=center colspan= 14>EX<td align=center colspan= 14>MEM<td align=center colspan= 14>WB<td align=center colspan= 14><pre> </pre><td align=center colspan= 10><pre> </pre>
+
+<tr><td align=left colspan= 10><pre> </pre><td align=left colspan= 25><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 10><pre> </pre>
+
+<tr><td align=left colspan= 10>OR<td align=left colspan= 25>R8,R1,R9<td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14>IF<td align=center colspan= 14>ID<td align=center colspan= 14>EX<td align=center colspan= 14>MEM<td align=center colspan= 14>WB<td align=center colspan= 10><pre> </pre>
+
+<tr><td align=left colspan= 10><pre> </pre><td align=left colspan= 25><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 10><pre> </pre>
+
+<tr><td align=left colspan= 10>XOR<td align=left colspan= 25>R10,R1,R11<td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14>IF<td align=center colspan= 14>ID<td align=center colspan= 14>EX<td align=center colspan= 14>MEM<td align=center colspan= 10>WB
+
+</table>
+
+<P ALIGN = center>
+
+<I>Рис. 5.7, а. Последовательность команд в конвейере и ускоренная пересылка данных
+
+<br>
+
+<P ALIGN = center>
+
+(data forwarding, data bypassing, short circuiting)</I>
+
+<table border=1>
+
+<tr><td  colspan= 10>ADD<td align=left colspan= 28>R1,R2,R3<td align=center colspan= 12>IF<td align=center colspan= 15>ID<td align=center colspan= 12>EX<td align=center colspan= 15>MEM<td align=center colspan= 15>WB<td align=center colspan= 15><pre> </pre><td  colspan= 40><pre> </pre>
+
+<tr><td  colspan= 10><pre> </pre><td align=left colspan= 28><pre> </pre><td align=center colspan= 12><pre> </pre><td align=center colspan= 7><pre> </pre><td align=center colspan= 7>R<td align=center colspan= 12><pre> </pre><td align=center colspan= 15><pre> </pre><td align=center colspan= 7>W<td align=center colspan= 7><pre> </pre><td align=center colspan= 15><pre> </pre><td align=center colspan= 42><pre> </pre>
+
+<tr><td  colspan= 10>SUB<td align=left colspan= 28>R4,R1,R5<td align=center colspan= 12><pre> </pre><td align=center colspan= 15>IF<td align=center colspan= 12>ID<td align=center colspan= 15>EX<td align=center colspan= 15>MEM<td align=center colspan= 15>WB<td align=center colspan= 15><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 11><pre> </pre>
+
+<tr><td  colspan= 10><pre> </pre><td align=left colspan= 28><pre> </pre><td align=center colspan= 12><pre> </pre><td align=center colspan= 15><pre> </pre><td align=center colspan= 5><pre> </pre><td align=center colspan= 7>R<td align=center colspan= 15><pre> </pre><td align=center colspan= 15><pre> </pre><td align=center colspan= 8>W<td align=center colspan= 7><pre> </pre><td align=center colspan= 40><pre> </pre>
+
+<tr><td  colspan= 10>AND<td align=left colspan= 28>R6,R1,R7<td align=center colspan= 12><pre> </pre><td align=center colspan= 15><pre> </pre><td align=center colspan= 12>IF<td align=center colspan= 15>ID<td align=center colspan= 15>EX<td align=center colspan= 15>MEM<td align=center colspan= 15>WB<td align=center colspan= 14><pre> </pre><td align=center colspan= 11><pre> </pre>
+
+<tr><td  colspan= 10><pre> </pre><td align=left colspan= 28><pre> </pre><td align=center colspan= 12><pre> </pre><td align=center colspan= 15><pre> </pre><td align=center colspan= 12><pre> </pre><td align=center colspan= 7><pre> </pre><td align=center colspan= 7>R<td align=center colspan= 15><pre> </pre><td align=center colspan= 15><pre> </pre><td align=center colspan= 7>W<td align=center colspan= 34><pre> </pre>
+
+<tr><td  colspan= 10>OR<td align=left colspan= 28>R8,R1,R9<td align=center colspan= 12><pre> </pre><td align=center colspan= 15><pre> </pre><td align=center colspan= 12><pre> </pre><td align=center colspan= 15>IF<td align=center colspan= 15>ID<td align=center colspan= 15>EX<td align=center colspan= 15>MEM<td align=center colspan= 12>WB<td align=center colspan= 13><pre> </pre>
+
+<tr><td  colspan= 10><pre> </pre><td align=left colspan= 28><pre> </pre><td align=center colspan= 12><pre> </pre><td align=center colspan= 15><pre> </pre><td align=center colspan= 12><pre> </pre><td align=center colspan= 15><pre> </pre><td align=center colspan= 7><pre> </pre><td align=center colspan= 7>R<td align=center colspan= 15><pre> </pre><td align=center colspan= 15><pre> </pre><td align=center colspan= 8>W<td align=center colspan= 18><pre> </pre>
+
+<tr><td  colspan= 10>XOR<td align=left colspan= 28>R10,R1,R11<td align=center colspan= 12><pre> </pre><td align=center colspan= 15><pre> </pre><td align=center colspan= 12><pre> </pre><td align=center colspan= 15><pre> </pre><td align=center colspan= 15>IF<td align=center colspan= 15>ID<td align=center colspan= 15>EX<td align=center colspan= 12>MEM<td align=center colspan= 13>WB
+
+<tr><td  colspan= 10><pre> </pre><td align=left colspan= 28><pre> </pre><td align=center colspan= 12><pre> </pre><td align=center colspan= 15><pre> </pre><td align=center colspan= 12><pre> </pre><td align=center colspan= 15><pre> </pre><td align=center colspan= 15><pre> </pre><td align=center colspan= 8><pre> </pre><td align=center colspan= 7>R<td align=center colspan= 15><pre> </pre><td align=center colspan= 12><pre> </pre><td align=center colspan= 7>W<td align=center colspan= 6><pre> </pre>
+
+</table>
+
+<P ALIGN = center>
+
+<I>Рис. 5.7, б. Совмещение чтения и записи регистров в одном такте</I>
+
+<P>
+
+В этом примере все команды, следующие за командой ADD, используют результат ее выполнения. Команда ADD записывает результат в регистр R1, а команда SUB читает это значение. Если не предпринять никаких мер для того, чтобы предотвратить этот конфликт, команда SUB прочитает неправильное значение и попытается его использовать. На самом деле значение, используемое командой SUB, является даже неопределенным: хотя логично предположить, что SUB всегда будет использовать значение R1, которое было присвоено какой-либо командой, предшествовавшей ADD, это не всегда так. Если произойдет прерывание между командами ADD и SUB, то команда ADD завершится, и значение R1 в этой точке будет соответствовать результату ADD. Такое непрогнозируемое поведение очевидно неприемлемо.
+
+<P>
+
+Проблема, поставленная в этом примере, может быть разрешена с помощью достаточно простой аппаратной техники, которая называется пересылкой или продвижением данных (data forwarding), обходом (data bypassing), иногда закороткой (short-circuiting). Эта аппаратура работает следующим образом. Результат операции АЛУ с его выходного регистра всегда снова подается назад на входы АЛУ. Если аппаратура обнаруживает, что предыдущая операция АЛУ записывает результат в регистр, соответствующий источнику операнда для следующей операции АЛУ, то логические схемы управления выбирают в качестве входа для АЛУ результат, поступающий по цепи &quot;обхода&quot; , а не значение, прочитанное из регистрового файла (рис. 5.8).
+
+<P>
+
+<CENTER><IMG SRC = "img00006.gif" BORDER = 1 ></CENTER>
+
+
+
+<P ALIGN = center>
+
+<I>Рис. 5.8. АЛУ с цепями обхода и ускоренной пересылки</I>
+
+<P>
+
+Эта техника &quot;обходов&quot; может быть обобщена для того, чтобы включить передачу результата прямо в то функциональное устройство, которое в нем нуждается: результат с выхода одного устройства &quot;пересылается&quot; на вход другого, а не с выхода некоторого устройства только на его вход.
+
+<P>
+
+<B>Классификация конфликтов по данным</B>
+
+<P>
+
+Конфликт возникает везде, где имеет место зависимость между командами, и они расположены по отношению друг к другу достаточно близко так, что совмещение операций, происходящее при конвейеризации, может привести к изменению порядка обращения к операндам. В нашем примере был проиллюстрирован конфликт, происходящий с регистровыми операндами, но для пары команд возможно появление зависимостей при записи или чтении одной и той же ячейки памяти. Однако, если все обращения к памяти выполняются в строгом порядке, то появление такого типа конфликтов предотвращается.
+
+<P>
+
+Известны три возможных конфликта по данным в зависимости от порядка операций чтения и записи. Рассмотрим две команды i и j, при этом i предшествует j. Возможны следующие конфликты:
+
+<UL TYPE = disc>
+
+<LI>RAW (чтение после записи) - j пытается прочитать операнд-источник данных прежде, чем i туда запишет. Таким образом, j может некорректно получить старое значение. Это наиболее общий тип конфликтов, способ их преодоления с помощью механизма &quot;обходов&quot; рассмотрен ранее.
+
+<LI>WAR (запись после чтения) - j пытается записать результат в приемник прежде, чем он считывается оттуда командой i, так что i может некорректно получить новое значение. Этот тип конфликтов как правило не возникает в системах с централизованным управлением потоком команд, обеспечивающих выполнение команд в порядке их поступления, так как последующая запись всегда выполняется позже, чем предшествующее считывание. Особенно часто конфликты такого рода могут возникать в системах, допускающих выполнение команд не в порядке их расположения в программном коде.
+
+<LI>WAW (запись после записи) - j пытается записать операнд прежде, чем будет записан результат команды i, т.е. записи заканчиваются в неверном порядке, оставляя в приемнике значение, записанное командой i, а не j. Этот тип конфликтов присутствует только в конвейерах, которые выполняют запись со многих ступеней (или позволяют команде выполняться даже в случае, когда предыдущая приостановлена).
+
+</UL>
+
+<P>
+
+<B>Конфликты по данным, приводящие к приостановке конвейера</B>
+
+<P>
+
+К сожалению не все потенциальные конфликты по данным могут обрабатываться с помощью механизма &quot;обходов&quot;. Рассмотрим следующую последовательность команд (рис. 5.9):
+
+<table border=1>
+
+<tr><td  colspan= 31>Команда<td align=center colspan= 13>IF<td align=center colspan= 13>ID<td align=center colspan= 13>EX <td align=center colspan= 13>MEM<td align=center colspan= 13>WB<td align=center colspan= 13><pre> </pre><td align=center colspan= 13><pre> </pre><td align=center colspan= 13><pre> </pre><td align=center colspan= 13><pre> </pre><td align=center colspan= 13><pre> </pre>
+
+<tr><td align=center colspan= 31>LW R1,32(R6)<td align=center colspan= 13><pre> </pre><td align=center colspan= 13>IF<td align=center colspan= 13>ID<td align=center colspan= 13>EX<td align=center colspan= 13>MEM<td align=center colspan= 13>WB<td align=center colspan= 13><pre> </pre><td align=center colspan= 13><pre> </pre><td align=center colspan= 13><pre> </pre><td align=center colspan= 13><pre> </pre>
+
+<tr><td align=center colspan= 31>ADD R4,R1,R7<td align=center colspan= 13><pre> </pre><td align=center colspan= 13><pre> </pre><td align=center colspan= 13>IF<td align=center colspan= 13>ID<td align=center colspan= 13>stall<td align=center colspan= 13>EX<td align=center colspan= 13>MEM<td align=center colspan= 13>WB<td align=center colspan= 13><pre> </pre><td align=center colspan= 13><pre> </pre>
+
+<tr><td align=center colspan= 31>SUB R5,R1,R8<td align=center colspan= 13><pre> </pre><td align=center colspan= 13><pre> </pre><td align=center colspan= 13><pre> </pre><td align=center colspan= 13>IF <td align=center colspan= 13>stall<td align=center colspan= 13>ID<td align=center colspan= 13>EX<td align=center colspan= 13>MEM<td align=center colspan= 13>WB<td align=center colspan= 13><pre> </pre>
+
+<tr><td align=center colspan= 31>AND R6,R1,R7<td align=center colspan= 13><pre> </pre><td align=center colspan= 13><pre> </pre><td align=center colspan= 13><pre> </pre><td align=center colspan= 13><pre> </pre><td align=center colspan= 13>stall<td align=center colspan= 13>IF<td align=center colspan= 13>ID<td align=center colspan= 13>EX<td align=center colspan= 13>MEM<td align=center colspan= 13>WB
+
+</table>
+
+<P ALIGN = center>
+
+<I>Рис. 5.9. Последовательность команд с приостановкой конвейера</I>
+
+<P>
+
+Этот случай отличается от последовательности подряд идущих команд АЛУ. Команда загрузки (LW) регистра R1 из памяти имеет задержку, которая не может быть устранена обычной &quot;пересылкой&quot;. Вместо этого нам нужна дополнительная аппаратура, называемая аппаратурой внутренних блокировок конвейера (pipeline interlook), чтобы обеспечить корректное выполнение примера. Вообще такого рода аппаратура обнаруживает конфликты и приостанавливает конвейер до тех пор, пока существует конфликт. В этом случае эта аппаратура приостанавливает конвейер начиная с команды, которая хочет использовать данные в то время, когда предыдущая команда, результат которой является операндом для нашей, вырабатывает этот результат. Эта аппаратура вызывает приостановку конвейера или появление &quot;пузыря&quot; точно также, как и в случае структурных конфликтов.
+
+<P>
+
+<B>Методика планирования компилятора для устранения конфликтов по данным</B>
+
+<P>
+
+Многие типы приостановок конвейера могут происходить достаточно часто. Например, для оператора А = B + С компилятор скорее всего сгенерирует следующую последовательность команд (рис.5.10):
+
+<table border=1>
+
+<tr><td align=left colspan= 33>LW R1,В<td align=center colspan= 14>IF<td align=center colspan= 14>ID<td align=center colspan= 14>EX <td align=center colspan= 14>MEM<td align=center colspan= 14>WB<td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre>
+
+<tr><td align=left colspan= 33>LW R2,С<td align=center colspan= 14><pre> </pre><td align=center colspan= 14>IF<td align=center colspan= 14>ID<td align=center colspan= 14>EX<td align=center colspan= 14>MEM<td align=center colspan= 14>WB<td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre>
+
+<tr><td align=left colspan= 33>ADD R3,R1,R2<td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14>IF<td align=center colspan= 14>ID<td align=center colspan= 14>stall<td align=center colspan= 14>EX<td align=center colspan= 14>MEM<td align=center colspan= 14>WB<td align=center colspan= 14><pre> </pre>
+
+<tr><td align=left colspan= 33>SW A,R3<td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14>IF <td align=center colspan= 14>stall<td align=center colspan= 14>ID<td align=center colspan= 14>EX<td align=center colspan= 14>MEM<td align=center colspan= 14>WB
+
+</table>
+
+<P ALIGN = center>
+
+<I>Рис. 5.10. Конвейерное выполнение оператора А = В + С</I>
+
+<P>
+
+Очевидно, выполнение команды ADD должно быть приостановлено до тех пор, пока не станет доступным поступающий из памяти операнд C. Дополнительной задержки выполнения команды SW не произойдет в случае применения цепей обхода для пересылки результата операции АЛУ непосредственно в регистр данных памяти для последующей записи.
+
+<P>
+
+Для данного простого примера компилятор никак не может улучшить ситуацию, однако в ряде более общих случаев он может реорганизовать последовательность команд так, чтобы избежать приостановок конвейера. Эта техника, называемая планированием загрузки конвейера (pipeline scheduling) или планированием потока команд (instruction scheduling), использовалась начиная с 60-х годов и стала особой областью интереса в 80-х годах, когда конвейерные машины стали более распространенными.
+
+<P>
+
+Пусть, например, имеется последовательность операторов: a = b + c; d = e - f;
+
+<P>
+
+Как сгенерировать код, не вызывающий остановок конвейера? Предполагается, что задержка загрузки из памяти составляет один такт. Ответ очевиден (рис. 5.11):
+
+<table border=1>
+
+<tr><td align=center colspan= 80><I>Неоптимизированная<br>последовательность команд</I><td align=center colspan= 77><I>Оптимизированная<br>последовательность команд</I>
+
+<tr><td align=left colspan= 80>LW R<SUB>b</SUB>,b<td align=left colspan= 77>LW R<SUB>b</SUB>,b
+
+<tr><td align=left colspan= 80>LW R<SUB>c</SUB>,c<td align=left colspan= 77>LW R<SUB>c</SUB>,c
+
+<tr><td align=left colspan= 80>ADD R<SUB>a</SUB>,R<SUB>b</SUB>,R<SUB>c</SUB><td align=left colspan= 77>LW R<SUB>e</SUB>,e
+
+<tr><td align=left colspan= 80>SW a,R<SUB>a</SUB><td align=left colspan= 77>ADD R<SUB>a</SUB>,R<SUB>b</SUB>,R<SUB>c</SUB>
+
+<tr><td align=left colspan= 80>LW R<SUB>e</SUB>,e<td align=left colspan= 77>LW R<SUB>f</SUB>,f
+
+<tr><td align=left colspan= 80>LW R<SUB>f</SUB>,f<td align=left colspan= 77>SW a,R<SUB>a</SUB>
+
+<tr><td align=left colspan= 80>SUB R<SUB>d</SUB>,R<SUB>e</SUB>,R<SUB>f</SUB><td align=left colspan= 77>SUB R<SUB>d</SUB>,R<SUB>e</SUB>,R<SUB>f</SUB>
+
+<tr><td align=left colspan= 80>SW d,R<SUB>d</SUB><td align=left colspan= 77>SW d,R<SUB>d</SUB>
+
+</table>
+
+<P ALIGN = center>
+
+<I>Рис. 5.11. Пример устранения конфликтов компилятором</I>
+
+<P>
+
+В результате устранены обе блокировки (командой LW R<SUB>c</SUB>,c команды ADD R<SUB>a</SUB>,R<SUB>b</SUB>,R<SUB>c</SUB> и командой LW R<SUB>f</SUB>,f команды SUB R<SUB>d</SUB>,R<SUB>e</SUB>,R<SUB>f</SUB>). Имеется зависимость между операцией АЛУ и операцией записи в память, но структура конвейера допускает пересылку результата с помощью цепей &quot;обхода&quot;. Заметим, что использование разных регистров для первого и второго операторов было достаточно важным для реализации такого правильного планирования. В частности, если переменная e была бы загружена в тот же самый регистр, что b или c, такое планирование не было бы корректным. В общем случае планирование конвейера может требовать увеличенного количества регистров. Такое увеличение может оказаться особенно существенным для машин, которые могут выдавать на выполнение несколько команд в одном такте.
+
+<P>
+
+Многие современные компиляторы используют технику планирования команд для улучшения производительности конвейера. В простейшем алгоритме компилятор просто планирует распределение команд в одном и том же базовом блоке. Базовый блок представляет собой линейный участок последовательности программного кода, в котором отсутствуют команды перехода, за исключением начала и конца участка (переходы внутрь этого участка тоже должны отсутствовать). Планирование такой последовательности команд осуществляется достаточно просто, поскольку компилятор знает, что каждая команда в блоке будет выполняться, если выполняется первая из них, и можно просто построить граф зависимостей этих команд и упорядочить их так, чтобы минимизировать приостановки конвейера. Для простых конвейеров стратегия планирования на основе базовых блоков вполне удовлетворительна. Однако когда конвейеризация становится более интенсивной и действительные задержки конвейера растут, требуются более сложные алгоритмы планирования.
+
+<P>
+
+К счастью, существуют аппаратные методы, позволяющие изменить порядок выполнения команд программы так, чтобы минимизировать приостановки конвейера. Эти методы получили общее название методов динамической оптимизации (в англоязычной литературе в последнее время часто применяются также термины &quot;out-of-order execution&quot; - неупорядоченное выполнение и &quot;out-of-order issue&quot; - неупорядоченная выдача). Основными средствами динамической оптимизации являются:
+
+<OL TYPE = 1>
+
+<LI>Размещение схемы обнаружения конфликтов в возможно более низкой точке конвейера команд так, чтобы позволить команде продвигаться по конвейеру до тех пор, пока ей реально не потребуется операнд, являющийся также результатом логически более ранней, но еще не завершившейся команды. Альтернативным подходом является централизованное обнаружение конфликтов на одной из ранних ступеней конвейера.
+
+<LI>Буферизация команд, ожидающих разрешения конфликта, и выдача последующих, логически не связанных команд, в &quot;обход&quot; буфера. В этом случае команды могут выдаваться на выполнение не в том порядке, в котором они расположены в программе, однако аппаратура обнаружения и устранения конфликтов между логически связанными командами обеспечивает получение результатов в соответствии с заданной программой.
+
+<LI>Соответствующая организация коммутирующих магистралей, обеспечивающая засылку результата операции непосредственно в буфер, хранящий логически зависимую команду, задержанную из-за конфликта, или непосредственно на вход функционального устройства до того, как этот результат будет записан в регистровый файл или в память (short-circuiting, data forwarding, data bypassing - методы, которые были рассмотрены ранее).
+
+</OL>
+
+<P>
+
+Еще одним аппаратным методом минимизации конфликтов по данным является метод переименования регистров (register renaming). Он получил свое название от широко применяющегося в компиляторах метода переименования - метода размещения данных, способствующего сокращению числа зависимостей и тем самым увеличению производительности при отображении необходимых исходной программе объектов (например, переменных) на аппаратные ресурсы (например, ячейки памяти и регистры).
+
+<P>
+
+При аппаратной реализации метода переименования регистров выделяются логические регистры, обращение к которым выполняется с помощью соответствующих полей команды, и физические регистры, которые размещаются в аппаратном регистровом файле процессора. Номера логических регистров динамически отображаются на номера физических регистров посредством таблиц отображения, которые обновляются после декодирования каждой команды. Каждый новый результат записывается в новый физический регистр. Однако предыдущее значение каждого логического регистра сохраняется и может быть восстановлено в случае, если выполнение команды должно быть прервано из-за возникновения исключительной ситуации или неправильного предсказания направления условного перехода.
+
+<P>
+
+В процессе выполнения программы генерируется множество временных регистровых результатов. Эти временные значения записываются в регистровые файлы вместе с постоянными значениями. Временное значение становится новым постоянным значением, когда завершается выполнение команды (фиксируется ее результат). В свою очередь, завершение выполнения команды происходит, когда все предыдущие команды успешно завершились в заданном программой порядке.
+
+<P>
+
+Программист имеет дело только с логическими регистрами. Реализация физических регистров от него скрыта. Как уже отмечалось, номера логических регистров ставятся в соответствие номерам физических регистров. Отображение реализуется с помощью таблиц отображения, которые обновляются после декодирования каждой команды. Каждый новый результат записывается в физический регистр. Однако до тех пор, пока не завершится выполнение соответствующей команды, значение в этом физическом регистре рассматривается как временное.
+
+<P>
+
+Метод переименования регистров упрощает контроль зависимостей по данным. В машине, которая может выполнять команды не в порядке их расположения в программе, номера логических регистров могут стать двусмысленными, поскольку один и тот же регистр может быть назначен последовательно для хранения различных значений. Но поскольку номера физических регистров уникально идентифицируют каждый результат, все неоднозначности устраняются.
+
+<H3><A NAME = "Сокращение потерь на выполнение команд перехода и минимизация конфликтов по управлению">Сокращение потерь на выполнение команд перехода и минимизация конфликтов по управлению</A></H3>
+
+<P>
+
+Конфликты по управлению могут вызывать даже большие потери производительности конвейера, чем конфликты по данным. Когда выполняется команда условного перехода, она может либо изменить, либо не изменить значение счетчика команд. Если команда условного перехода заменяет счетчик команд значением адреса, вычисленного в команде, то переход называется выполняемым; в противном случае, он называется невыполняемым.
+
+<P>
+
+Простейший метод работы с условными переходами заключается в приостановке конвейера как только обнаружена команда условного перехода до тех пор, пока она не достигнет ступени конвейера, которая вычисляет новое значение счетчика команд (рис. 5.12). Такие приостановки конвейера из-за конфликтов по управлению должны реализовываться иначе, чем приостановки из-за конфликтов по данным, поскольку выборка команды, следующей за командой условного перехода, должна быть выполнена как можно быстрее, как только мы узнаем окончательное направление команды условного перехода.
+
+<table border=1>
+
+<tr><td align=left colspan= 42>Команды перехода<td align=center colspan= 11>IF<td align=center colspan= 11>ID<td align=center colspan= 11>EX <td align=center colspan= 11>MEM<td align=center colspan= 11>WB<td align=center colspan= 11><pre> </pre><td align=center colspan= 11><pre> </pre><td align=center colspan= 11><pre> </pre><td align=center colspan= 11><pre> </pre><td align=center colspan= 11><pre> </pre>
+
+<tr><td align=left colspan= 42>Следующая команда<td align=center colspan= 11><pre> </pre><td align=center colspan= 11>IF<td align=center colspan= 11>stall<td align=center colspan= 11>stall<td align=center colspan= 11>IF<td align=center colspan= 11>ID<td align=center colspan= 11>EX <td align=center colspan= 11>MEM<td align=center colspan= 11>WB<td align=center colspan= 11><pre> </pre>
+
+<tr><td align=left colspan= 42>Следующая команда +1<td align=center colspan= 11><pre> </pre><td align=center colspan= 11><pre> </pre><td align=center colspan= 11>stall<td align=center colspan= 11>stall<td align=center colspan= 11>stall<td align=center colspan= 11>IF<td align=center colspan= 11>ID<td align=center colspan= 11>EX <td align=center colspan= 11>MEM<td align=center colspan= 11>WB
+
+<tr><td align=left colspan= 42>Следующая команда +2<td align=center colspan= 11><pre> </pre><td align=center colspan= 11><pre> </pre><td align=center colspan= 11><pre> </pre><td align=center colspan= 11>stall<td align=center colspan= 11>stall<td align=center colspan= 11>stall<td align=center colspan= 11>IF<td align=center colspan= 11>ID<td align=center colspan= 11>EX <td align=center colspan= 11>MEM
+
+<tr><td align=left colspan= 42>Следующая команда +3<td align=center colspan= 11><pre> </pre><td align=center colspan= 11><pre> </pre><td align=center colspan= 11><pre> </pre><td align=center colspan= 11><pre> </pre><td align=center colspan= 11>stall<td align=center colspan= 11>stall<td align=center colspan= 11>stall<td align=center colspan= 11>IF<td align=center colspan= 11>ID<td align=center colspan= 11>EX 
+
+<tr><td align=left colspan= 42>Следующая команда +4<td align=center colspan= 11><pre> </pre><td align=center colspan= 11><pre> </pre><td align=center colspan= 11><pre> </pre><td align=center colspan= 11><pre> </pre><td align=center colspan= 11><pre> </pre><td align=center colspan= 11>stall<td align=center colspan= 11>stall<td align=center colspan= 11>stall<td align=center colspan= 11>IF<td align=center colspan= 11>ID
+
+<tr><td align=left colspan= 42>Следующая команда +5<td align=center colspan= 11><pre> </pre><td align=center colspan= 11><pre> </pre><td align=center colspan= 11><pre> </pre><td align=center colspan= 11><pre> </pre><td align=center colspan= 11><pre> </pre><td align=center colspan= 11><pre> </pre><td align=center colspan= 11>stall<td align=center colspan= 11>stall<td align=center colspan= 11>stall<td align=center colspan= 11>IF
+
+</table>
+
+<P ALIGN = center>
+
+<I>Рис. 5.12. Приостановка конвейера при выполнении команды условного перехода</I>
+
+<P>
+
+Например, если конвейер будет приостановлен на три такта на каждой команде условного перехода, то это может существенно отразиться на производительности машины. При частоте команд условного перехода в программах, равной 30% и идеальном CPI, равным 1, машина с приостановками условных переходов достигает примерно только половины ускорения, получаемого за счет конвейерной организации. Таким образом, снижение потерь от условных переходов становится критическим вопросом. Число тактов, теряемых при приостановках из-за условных переходов, может быть уменьшено двумя способами:
+
+<OL TYPE = 1>
+
+<LI>Обнаружением является ли условный переход выполняемым или невыполняемым на более ранних ступенях конвейера.
+
+<LI>Более ранним вычислением значения счетчика команд для выполняемого перехода (т.е. вычислением целевого адреса перехода).
+
+</OL>
+
+<P>
+
+Реализация этих условий требует модернизации исходной схемы конвейера (рис. 5.13).
+
+<P>
+
+В некоторых машинах конфликты из-за условных переходов являются даже еще более дорогостоящими по количеству тактов, чем в нашем примере, поскольку время на оценку условия перехода и вычисление адреса перехода может быть даже большим. Например, машина с раздельными ступенями декодирования и выборки команд возможно будет иметь задержку условного перехода (длительность конфликта по управлению), которая по крайней мере на один такт длиннее. Многие компьютеры VAX имеют задержки условных переходов в четыре и более тактов, а большие машины с глубокими конвейерами имеют потери по условным переходам, равные шести или семи тактам. В общем случае, чем глубина конвейера больше, тем больше потери на командах условного перехода, исчисляемые в тактах. Конечно эффект снижения относительной производительности при этом зависит от общего CPI машины. Машины с высоким CPI могут иметь условные переходы большей длительности, поскольку процент производительности машины, которая будет потеряна из-за условных переходов, меньше.
+
+<P>
+
+<B>Снижение потерь на выполнение команд условного перехода</B>
+
+<P>
+
+Имеется несколько методов сокращения приостановок конвейера, возникающих из-за задержек выполнения условных переходов. В данном разделе обсуждаются четыре простые схемы, используемые во время компиляции. В этих схемах прогнозирование направления перехода выполняется статически, т.е. прогнозируемое направление перехода фиксируется для каждой команды условного перехода на все время выполнения программы. После обсуждения этих схем мы исследуем вопрос о правильности предсказания направления перехода компиляторами, поскольку все эти схемы основаны на такой технологии. В следующей главе мы рассмотрим более мощные схемы, используемые компиляторами (такие, например, как разворачивание циклов), которые уменьшают частоту команд условных переходов при реализации циклов, а также динамические, аппаратно реализованные схемы прогнозирования.
+
+<P>
+
+<I>Метод выжидания</I>
+
+<P>
+
+Простейшая схема обработки команд условного перехода заключается в замораживании или подавлении операций в конвейере, путем блокировки выполнения любой команды, следующей за командой условного перехода, до тех пор, пока не станет известным направление перехода. Рис. 5.12 отражал именно такой подход. Привлекательность такого решения заключается в его простоте.
+
+<P>
+
+<I>Метод возврата</I>
+
+<P>
+
+Более хорошая и не на много более сложная схема состоит в том, чтобы прогнозировать условный переход как невыполняемый. При этом аппаратура должна просто продолжать выполнение программы, как если бы условный переход вовсе не выполнялся. В этом случае необходимо позаботиться о том, чтобы не изменить состояние машины до тех пор, пока направление перехода не станет окончательно известным. В некоторых машинах эта схема с невыполняемыми по прогнозу условными переходами реализована путем продолжения выборки команд, как если бы условный переход был обычной командой. Поведение конвейера выглядит так, как будто ничего необычного не происходит. Однако, если условный переход на самом деле выполняется, то необходимо просто очистить конвейер от команд, выбранных вслед за командой условного перехода и заново повторить выборку команд (рис. 5.14).
+
+<table border=1>
+
+<tr><td align=left colspan= 36>Невыполняемый условный переход<td align=center colspan= 14>IF<td align=center colspan= 14>ID<td align=center colspan= 14>EX <td align=center colspan= 14>MEM<td align=center colspan= 14>WB<td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre>
+
+<tr><td align=left colspan= 36>Команда i+1<td align=center colspan= 14><pre> </pre><td align=center colspan= 14>IF<td align=center colspan= 14>ID<td align=center colspan= 14>EX<td align=center colspan= 14>MEM<td align=center colspan= 14>WB<td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre>
+
+<tr><td align=left colspan= 36>Команда i+2<td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14>IF<td align=center colspan= 14>ID<td align=center colspan= 14>EX<td align=center colspan= 14>MEM<td align=center colspan= 14>WB<td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre>
+
+<tr><td align=left colspan= 36>Команда i+3<td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14>IF<td align=center colspan= 14>ID<td align=center colspan= 14>EX<td align=center colspan= 14>MEM<td align=center colspan= 14>WB<td align=center colspan= 14><pre> </pre>
+
+<tr><td align=left colspan= 36>Команда i+4<td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14>IF<td align=center colspan= 14>ID<td align=center colspan= 14>EX<td align=center colspan= 14>MEM<td align=center colspan= 14>WB
+
+<tr><td align=left colspan= 36><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre>
+
+<tr><td align=left colspan= 36>Выполняемый<br>условный переход<td align=center colspan= 14>IF<td align=center colspan= 14>ID<td align=center colspan= 14>EX <td align=center colspan= 14>MEM<td align=center colspan= 14>WB<td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre>
+
+<tr><td align=left colspan= 36>Команда i+1<td align=center colspan= 14><pre> </pre><td align=center colspan= 14>IF<td align=center colspan= 14>ID<td align=center colspan= 14>EX<td align=center colspan= 14>MEM<td align=center colspan= 14>WB<td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre>
+
+<tr><td align=left colspan= 36>Команда i+2<td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14>stall<td align=center colspan= 14>IF<td align=center colspan= 14>ID<td align=center colspan= 14>EX<td align=center colspan= 14>MEM<td align=center colspan= 14>WB<td align=center colspan= 14><pre> </pre>
+
+<tr><td align=left colspan= 36>Команда i+3<td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14>stall<td align=center colspan= 14>IF<td align=center colspan= 14>ID<td align=center colspan= 14>EX<td align=center colspan= 14>MEM<td align=center colspan= 14>WB
+
+<tr><td align=left colspan= 36>Команда i+4<td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14><pre> </pre><td align=center colspan= 14>stall<td align=center colspan= 14>IF<td align=center colspan= 14>ID<td align=center colspan= 14>EX<td align=center colspan= 14>MEM
+
+</table>
+
+<P ALIGN = center>
+
+<I>Рис. 5.14. Диаграмма работы модернизированного конвейера</I>
+
+<P>
+
+Альтернативная схема прогнозирует переход как выполняемый. Как только команда условного перехода декодирована и вычислен целевой адрес перехода, мы предполагаем, что переход выполняемый, и осуществляем выборку команд и их выполнение, начиная с целевого адреса. Если мы не знаем целевой адрес перехода раньше, чем узнаем окончательное направление перехода, у этого подхода нет никаких преимуществ. Если бы условие перехода зависело от непосредственно предшествующей команды, то произошла бы приостановка конвейера из-за конфликта по данным для регистра, который является условием перехода, и мы бы узнали сначала целевой адрес. В таких случаях прогнозировать переход как выполняемый было бы выгодно. Дополнительно в некоторых машинах (особенно в машинах с устанавливаемыми по умолчанию кодами условий или более мощным (а потому и более медленным) набором условий перехода) целевой адрес перехода известен раньше окончательного направления перехода, и схема прогноза перехода как выполняемого имеет смысл.
+
+<P>
+
+<I>Задержанные переходы</I>
+
+<P>
+
+Четвертая схема, которая используется в некоторых машинах называется &quot;задержанным переходом&quot;. В задержанном переходе такт выполнения с задержкой перехода длиною n есть:
+
+<P>
+
+<CENTER><IMG SRC = "img00007.gif" BORDER = 1 ></CENTER>
+
+
+
+<P>
+
+Команды 1 - n находятся в слотах (временных интервалах) задержанного перехода. Задача программного обеспечения заключается в том, чтобы сделать команды, следующие за командой перехода, действительными и полезными. Аппаратура гарантирует реальное выполнение этих команд перед выполнением собственно перехода. Здесь используются несколько приемов оптимизации.
+
+<P>
+
+На рис. 5.15, а показаны три случая, при которых может планироваться задержанный переход. В верхней части рисунка для каждого случая показана исходная последовательность команд, а в нижней части - последовательность команд, полученная в результате планирования. В случае (а) слот задержки заполняется независимой командой, находящейся перед командой условного перехода. Это наилучший выбор. Стратегии (b) и (c) используются, если применение стратегии (a) невозможно.
+
+<P>
+
+В последовательностях команд для случаев (b) и (c) использование содержимого регистра R1 в качестве условия перехода препятствует перемещению команды ADD (которая записывает результат в регистр R1) за команду перехода. В случае (b) слот задержки заполняется командой, находящейся по целевому адресу команды перехода. Обычно такую команду приходится копировать, поскольку к ней возможны обращения и из других частей программы. Стратегии (b) отдается предпочтение, когда с высокой вероятностью переход является выполняемым, например, если это переход на начало цикла.
+
+<P>
+
+Наконец, слот задержки может заполняться командой, находящейся между командой невыполняемого перехода и командой, находящейся по целевому адресу, как в случае (c). Чтобы подобная оптимизация была законной, необходимо, чтобы можно было все-таки выполнить команду SUB, если переход пойдет не по прогнозируемому направлению. При этом мы предполагаем, что команда SUB выполнит ненужную работу, но вся программа при этом будет выполняться корректно. Это, например, может быть в случае, если регистр R4 используется только для временного хранения промежуточных результатов вычислений, когда переход выполняется не по прогнозируемому направлению.
+
+<P ALIGN = center>
+
+<CENTER><IMG SRC = "img00008.gif" BORDER = 1 ></CENTER>
+
+
+
+<P ALIGN = center>
+
+<I>Рис. 5.15, а. Требования к переставляемым командам при планировании
+
+<br>
+
+<P ALIGN = center>
+
+задержанного перехода</I>
+
+<P>
+
+Рис. 5.15, б показывает различные ограничения для всех этих схем планирования условных переходов, а также ситуации, в которых они дают выигрыш. Компилятор должен соблюдать требования при подборе подходящей команды для заполнения слота задержки. Если такой команды не находится, слот задержки должен заполняться пустой операцией.
+
+<table border=1>
+
+<tr><td align=center colspan= 32>Рассматриваемый<br>случай<td align=center colspan= 74>Требования<td align=center colspan= 50>Когда увеличивается<br>производительность
+
+<tr><td  colspan= 32>(a)<td  colspan= 74>Команда условного перехода не должна зависеть от переставляемой команды<td  colspan= 50> Всегда
+
+<tr><td  colspan= 32>(b)<td  colspan= 74>Выполнение переставляемой команды должно быть корректным, даже если переход не выполняется<br>Может потребоваться копирование команды<td  colspan= 50>Когда переход выполняется. Может увеличивать размер программы в случае копирования команды
+
+<tr><td  colspan= 32>(c)<td  colspan= 74>Выполнение переставляемой команды должно быть корректным, даже если переход выполняется<td  colspan= 50>Когда переход не выполняется
+
+</table>
+
+<P ALIGN = center>
+
+<I>Рис. 5.15, б</I>
+
+<P>
+
+Планирование задержанных переходов осложняется (1) наличием ограничений на команды, размещение которых планируется в слотах задержки и (2) необходимостью предсказывать во время компиляции, будет ли условный переход выполняемым или нет. Рис. 5.16 дает общее представление об эффективности планирования переходов для простейшего конвейера с одним слотом задержки перехода при использовании простого алгоритма планирования. Он показывает, что больше половины слотов задержки переходов оказываются заполненными. При этом почти 80% заполненных слотов оказываются полезными для выполнения программы. Это может показаться удивительным, поскольку условные переходы являются выполняемыми примерно в 53% случаев. Высокий процент использования заполненных слотов объясняется тем, что примерно половина из них заполняется командами, предшествовавшими команде условного перехода (стратегия (a)), выполнение которых необходимо независимо от того, выполняется ли переход, или нет.
+
+<P ALIGN = center>
+
+<CENTER><IMG SRC = "img00009.gif" BORDER = 1 WIDTH= 104%></CENTER>
+
+
+
+<P ALIGN = center>
+
+<I>Рис. 5.16. Частота заполнения одного слота задержки условного перехода</I>
+
+<P>
+
+Имеются небольшие дополнительные затраты аппаратуры на реализацию задержанных переходов. Из-за задержанного эффекта условных переходов, для корректного восстановления состояния в случае появления прерывания нужны несколько счетчиков команд (один плюс длина задержки).
+
+<P>
+
+<B>Статическое прогнозирование условных переходов: использование технологии компиляторов</B>
+
+<P>
+
+Имеются два основных метода, которые можно использовать для статического предсказания переходов: метод исследования структуры программы и метод использования информации о профиле выполнения программы, который собран в результате предварительных запусков программы. Использование структуры программы достаточно просто: в качестве исходной точки можно предположить, например, что все идущие назад по программе переходы являются выполняемыми, а идущие вперед по программе - невыполняемыми. Однако эта схема не очень эффективна для большинства программ. Основываясь только на структуре программы просто трудно сделать лучший прогноз.
+
+<P>
+
+Альтернативная техника для предсказания переходов основана на информации о профиле выполнения программы, собранной во время предыдущих прогонов. Ключевым моментом, который делает этот подход заслуживающим внимания, является то, что поведение переходов при выполнении программы часто повторяется, т.е. каждый отдельный переход в программе часто оказывается смещенным в одну из сторон: он либо выполняемый, либо невыполняемый. Проведенные многими авторами исследования показывают достаточно успешное предсказания переходов с использованием этой стратегии.
+
+<P>
+
+В следующей главе мы рассмотрим использование схем динамического прогнозирования, основанного на поведении программы во время ее работы. Мы также рассмотрим несколько методов планирования кода во время компиляции. Эта методика требует статического предсказания переходов, таким образом идеи этого раздела являются важными.
+
+<H3><A NAME = "Проблемы реализации точного прерывания в конвейере">Проблемы реализации точного прерывания в конвейере</A></H3>
+
+<P>
+
+Обработка прерываний в конвейерной машине оказывается более сложной из-за того, что совмещенное выполнение команд затрудняет определение возможности безопасного изменения состояния машины произвольной командой. В конвейерной машине команда выполняется по этапам, и ее завершение осуществляется через несколько тактов после выдачи для выполнения. Еще в процессе выполнения отдельных этапов команда может изменить состояние машины. Тем временем возникшее прерывание может вынудить машину прервать выполнение еще не завершенных команд.
+
+<P>
+
+Как и в неконвейерных машинах двумя основными проблемами при реализации прерываний являются: (1) прерывания возникают в процессе выполнения некоторой команды; (2) необходим механизм возврата из прерывания для продолжения выполнения программы. Например, для нашего простейшего конвейера прерывание по отсутствию страницы виртуальной памяти при выборке данных не может произойти до этапа выборки из памяти (MEM). В момент возникновения этого прерывания в процессе обработки уже будут находиться несколько команд. Поскольку подобное прерывание должно обеспечить возврат для продолжения программы и требует переключения на другой процесс (операционную систему), необходимо надежно очистить конвейер и сохранить состояние машины таким, чтобы повторное выполнение команды после возврата из прерывания осуществлялось при корректном состоянии машины. Обычно это реализуется путем сохранения адреса команды (PC), вызвавшей прерывание. Если выбранная после возврата из прерывания команда не является командой перехода, то сохраняется обычная последовательность выборки и обработки команд в конвейере. Если же это команда перехода, то мы должны оценить условие перехода и в зависимости от выбранного направления начать выборку либо по целевому адресу команды перехода, либо следующей за переходом команды. Когда происходит прерывание, для корректного сохранения состояния машины необходимо выполнить следующие шаги:
+
+<OL TYPE = 1>
+
+<LI>В последовательность команд, поступающих на обработку в конвейер, принудительно вставить команду перехода на прерывание.
+
+<LI>Пока выполняется команда перехода на прерывание, погасить все требования записи, выставленные командой, вызвавшей прерывание, а также всеми следующими за ней в конвейере командами. Эти действия позволяют предотвратить все изменения состояния машины командами, которые не завершились к моменту начала обработки прерывания.
+
+<LI>После передачи управления подпрограмме обработки прерываний операционной системы, она немедленно должна сохранить значение адреса команды (PC), вызвавшей прерывание. Это значение будет использоваться позже для организации возврата из прерывания.
+
+</OL>
+
+<P>
+
+Если используются механизмы задержанных переходов, состояние машины уже невозможно восстановить с помощью одного счетчика команд, поскольку в процессе восстановления команды в конвейере могут оказаться вовсе не последовательными. В частности, если команда, вызвавшая прерывание, находилась в слоте задержки перехода и переход был выполненным, то необходимо заново повторить выполнение команд из слота задержки плюс команду, находящуюся по целевому адресу команды перехода. Сама команда перехода уже выполнилась и ее повторения не требуется. При этом адреса команд из слота задержки перехода и целевой адрес команды перехода естественно не являются последовательными. Поэтому необходимо сохранять и восстанавливать несколько счетчиков команд, число которых на единицу превышает длину слота задержки. Это выполняется на третьем шаге обработки прерывания.
+
+<P>
+
+После обработки прерывания специальные команды осуществляют возврат из прерывания путем перезагрузки счетчиков команд и инициализации потока команд. Если конвейер может быть остановлен так, что команды, непосредственно предшествовавшие вызвавшей прерывание команде, завершаются, а следовавшие за ней могут быть заново запущены для выполнения, то говорят, что конвейер обеспечивает точное прерывание. В идеале команда, вызывающая прерывание, не должна менять состояние машины, и для корректной обработки некоторых типов прерываний требуется, чтобы команда, вызывающая прерывание, не имела никаких побочных эффектов. Для других типов прерываний, например, для прерываний по исключительным ситуациям плавающей точки, вызывающая прерывание команда на некоторых машинах записывает свои результаты еще до того момента, когда прерывание может быть обработано. В этих случаях аппаратура должна быть готовой для восстановления операндов-источников, даже если местоположение результата команды совпадает с местоположением одного из операндов-источников.
+
+<P>
+
+Поддержка точных прерываний во многих системах является обязательным требованием, а в некоторых системах была бы весьма желательной, поскольку она упрощает интерфейс операционной системы. Как минимум в машинах со страничной организацией памяти или с реализацией арифметической обработки в соответствии со стандартом IEEE средства обработки прерываний должны обеспечивать точное прерывание либо целиком с помощью аппаратуры, либо с помощью некоторой поддержки со стороны программных средств.
+
+<P>
+
+Необходимость реализации в машине точных прерываний иногда оспаривается из-за некоторых проблем, которые осложняют повторный запуск команд. Повторный запуск сложен из-за того, что команды могут изменить состояние машины еще до того, как они гарантировано завершают свое выполнение (иногда гарантированное завершение команды называется фиксацией команды или фиксацией результатов выполнения команды). Поскольку команды в конвейере могут быть взаимозависимыми, блокировка изменения состояния машины может оказаться непрактичной, если конвейер продолжает работать. Таким образом, по мере увеличения степени конвейеризации машины возникает необходимость отката любого изменения состояния, выполненного до фиксации команды. К счастью, в простых конвейерах, подобных рассмотренному, эти проблемы не возникают. На рис. 5.17 показаны ступени рассмотренного конвейера и причины прерываний, которые могут возникнуть на соответствующих ступенях при выполнении команд.
+
+<table border=1>
+
+<tr><td  colspan= 37><B>Ступень конвейера</B><td  colspan= 120><B>Причина прерывания</B>
+
+<tr><td  colspan= 37>IF<td  colspan= 120>Ошибка при обращении к странице памяти при выборке команды; невыровненное обращение к памяти; нарушение защиты памяти
+
+<tr><td  colspan= 37>ID<td  colspan= 120>Неопределенный или запрещенный код операции
+
+<tr><td  colspan= 37>EX<td  colspan= 120>Арифметическое прерывание
+
+<tr><td  colspan= 37>MEM<td  colspan= 120>Ошибка при обращении к странице памяти при выборке данных; невыровненное обращение к памяти; нарушение защиты памяти
+
+<tr><td  colspan= 37>WB<td  colspan= 120>Отсутствует
+
+</table>
+
+<P ALIGN = center>
+
+<I>Рис. 5.17. Причины прерываний в простейшем конвейере</I>
+
+<H3><A NAME = "Обработка многотактных операций и механизмы обходов в длинных конвейерах">Обработка многотактных операций и механизмы обходов в длинных конвейерах</A></H3>
+
+<P>
+
+В рассмотренном нами конвейере стадия выполнения команды (EX) составляла всего один такт, что вполне приемлемо для целочисленных операций. Однако для большинства операций плавающей точки было бы непрактично требовать, чтобы все они выполнялись за один или даже за два такта. Это привело бы к существенному увеличению такта синхронизации конвейера, либо к сверхмерному увеличению количества оборудования (объема логических схем) для реализации устройств плавающей точки. Проще всего представить, что команды плавающей точки используют тот же самый конвейер, что и целочисленные команды, но с двумя важными изменениями. Во-первых, такт EX может повторяться многократно столько раз, сколько необходимо для выполнения операции. Во-вторых, в процессоре может быть несколько функциональных устройств, реализующих операции плавающей точки. При этом могут возникать приостановки конвейера, если выданная для выполнения команда либо вызывает структурный конфликт по функциональному устройству, которое она использует, либо существует конфликт по данным.
+
+<P>
+
+Допустим, что в нашей реализации процессора имеются четыре отдельных функциональных устройства:
+
+<OL TYPE = 1>
+
+<LI>Основное целочисленное устройство.
+
+<LI>Устройство умножения целочисленных операндов и операндов с плавающей точкой.
+
+<LI>Устройство сложения с плавающей точкой.
+
+<LI>Устройство деления целочисленных операндов и операндов с плавающей точкой.
+
+</OL>
+
+<P>
+
+<CENTER><IMG SRC = "img00010.gif" BORDER = 1 ></CENTER>
+
+
+
+<P ALIGN = center>
+
+<I>Рис. 5.18. Конвейер с дополнительными функциональными устройствами</I>
+
+<P>
+
+Целочисленное устройство обрабатывает все команды загрузки и записи в память при работе с двумя наборами регистров (целочисленных и с плавающей точкой), все целочисленные операции (за исключением команд умножения и деления) и все команды переходов. Если предположить, что стадии выполнения других функциональных устройств неконвейерные, то рис. 5.18 показывает структуру такого конвейера. Поскольку стадия EX является неконвейерной, никакая команда, использующая функциональное устройство, не может быть выдана для выполнения до тех пор, пока предыдущая команда не покинет ступень EX. Более того, если команда не может поступить на ступень EX, весь конвейер за этой командой будет приостановлен.
+
+<P>
+
+В действительности промежуточные результаты возможно не используются циклически ступенью EX, как это показано на рис. 5.18, и ступень EX имеет задержки длительностью более одного такта. Мы можем обобщить структуру конвейера плавающей точки, допустив конвейеризацию некоторых ступеней и параллельное выполнение нескольких операций. Чтобы описать работу такого конвейера, мы должны определить задержки функциональных устройств, а также скорость инициаций или скорость повторения операций. Это скорость, с которой новые операции данного типа могут поступать в функциональное устройство. Например, предположим, что имеют место следующие задержки функциональных устройств и скорости повторения операций:
+
+<table border=1>
+
+<tr><td  colspan= 75>Функциональное устройство<td  colspan= 36>Задержка<td  colspan= 45>Скорость повторения
+
+<tr><td  colspan= 75>Целочисленное АЛУ<td  colspan= 36>1<td  colspan= 45>1
+
+<tr><td  colspan= 75>Сложение с ПТ<td  colspan= 36>4<td  colspan= 45>2
+
+<tr><td  colspan= 75>Умножение с ПТ (и целочисленное)<td  colspan= 36>6<td  colspan= 45>3
+
+<tr><td  colspan= 75>Деление с ПТ (и целочисленное)<td  colspan= 36>15<td  colspan= 45>15
+
+</table>
+
+<P>
+
+На рис. 5.19 представлена структура подобного конвейера. Ее реализация требует введения конвейерной регистровой станции EX1/EX2 и модификации связей между регистрами ID/EX и EX/MEM.
+
+<P>
+
+<CENTER><IMG SRC = "img00011.gif" BORDER = 1 ></CENTER>
+
+
+
+<P ALIGN = center>
+
+<I>Рис. 5.19. Конвейер с многоступенчатыми функциональными устройствами</I>
+
+<P>
+
+<B>Конфликты и ускоренные пересылки в длинных конвейерах</B>
+
+<P>
+
+Имеется несколько различных аспектов обнаружения конфликтов и организации ускоренной пересылки данных в конвейерах, подобных представленному на рис. 5.19:
+
+<OL TYPE = 1>
+
+<LI>Поскольку устройства не являются полностью конвейерными, в данной схеме возможны структурные конфликты. Эти ситуации необходимо обнаруживать и приостанавливать выдачу команд.
+
+<LI>Поскольку устройства имеют разные времена выполнения, количество записей в регистровый файл в каждом такте может быть больше 1.
+
+<LI>Возможны конфликты типа WAW, поскольку команды больше не поступают на ступень WB в порядке их выдачи для выполнения. Заметим, что конфликты типа WAR невозможны, поскольку чтение регистров всегда осуществляется на ступени ID.
+
+<LI>Команды могут завершаться не в том порядке, в котором они были выданы для выполнения, что вызывает проблемы с реализацией прерываний.
+
+</OL>
+
+<P>
+
+Прежде чем представить общее решение для реализации схем обнаружения конфликтов, рассмотрим вторую и третью проблемы.
+
+<P>
+
+Если предположить, что файл регистров с ПТ имеет только один порт записи, то последовательность операций с ПТ, а также операция загрузки ПТ совместно с операциями ПТ может вызвать конфликты по порту записи в регистровый файл. Рассмотрим последовательность команд, представленную на рис. 5.20. В такте 10 все три команды достигнут ступени WB и должны произвести запись в регистровый файл. При наличии только одного порта записи в регистровый файл машина должна обеспечить последовательное завершение команд. Этот единственный регистровый порт является источником структурных конфликтов. Чтобы решить эту проблему, можно увеличить количество портов в регистровом файле, но такое решение может оказаться неприемлемым, поскольку эти дополнительные порты записи скорее всего будут редко использоваться. Однако в установившемся состоянии максимальное количество необходимых портов записи равно 1. Поэтому в реальных машинах разработчики предпочитают отслеживать обращения к порту записи в регистры и рассматривать одновременное к нему обращение как структурный конфликт.
+
+<table border=1>
+
+<tr><td  colspan= 32><B>Команда</B><td align=center colspan= 127><B>Номер такта</B>
+
+<tr><td  colspan= 32><pre> </pre><td align=center colspan= 12><B>1</B><td align=center colspan= 12><B>2</B><td align=center colspan= 12><B>3</B><td align=center colspan= 12><B>4</B><td align=center colspan= 12><B>5</B><td align=center colspan= 12><B>6</B><td align=center colspan= 12><B>7</B><td align=center colspan= 12><B>8</B><td align=center colspan= 12><B>9</B><td align=center colspan= 19><B>10</B>
+
+<tr><td  colspan= 32>MULTD F0,F4,F6<td align=center colspan= 12>IF<td align=center colspan= 12>ID<td align=center colspan= 12>EX1<SUB>1</SUB><td align=center colspan= 12>EX1<SUB>2</SUB><td align=center colspan= 12>EX1<SUB>3</SUB><td align=center colspan= 12>EX2<SUB>1</SUB><td align=center colspan= 12>EX2<SUB>2</SUB><td align=center colspan= 12>EX2<SUB>3</SUB><td align=center colspan= 12>MEM<td align=center colspan= 19>WB
+
+<tr><td  colspan= 32>...<td align=center colspan= 12><pre> </pre><td align=center colspan= 12>IF<td align=center colspan= 12>ID<td align=center colspan= 12>EX<td align=center colspan= 12>MEM<td align=center colspan= 12>WB<td align=center colspan= 12><pre> </pre><td align=center colspan= 12><pre> </pre><td align=center colspan= 12><pre> </pre><td align=center colspan= 19><pre> </pre>
+
+<tr><td  colspan= 32>ADDD F2,F4,F6<td align=center colspan= 12><pre> </pre><td align=center colspan= 12><pre> </pre><td align=center colspan= 12>IF<td align=center colspan= 12>ID<td align=center colspan= 12>EX1<SUB>1</SUB><td align=center colspan= 12>EX1<SUB>2</SUB><td align=center colspan= 12>EX2<SUB>1</SUB><td align=center colspan= 12>EX2<SUB>2</SUB><td align=center colspan= 12>MEM<td align=center colspan= 19>WB
+
+<tr><td  colspan= 32>... <td align=center colspan= 12><pre> </pre><td align=center colspan= 12><pre> </pre><td align=center colspan= 12><pre> </pre><td align=center colspan= 12>IF<td align=center colspan= 12>ID<td align=center colspan= 12>EX<td align=center colspan= 12>MEM<td align=center colspan= 12>WB<td align=center colspan= 12><pre> </pre><td align=center colspan= 19><pre> </pre>
+
+<tr><td  colspan= 32>... <td align=center colspan= 12><pre> </pre><td align=center colspan= 12><pre> </pre><td align=center colspan= 12><pre> </pre><td align=center colspan= 12><pre> </pre><td align=center colspan= 12>IF<td align=center colspan= 12>ID<td align=center colspan= 12>EX<td align=center colspan= 12>MEM<td align=center colspan= 12>WB<td align=center colspan= 19><pre> </pre>
+
+<tr><td  colspan= 32>LD F8,0(R2)<td align=center colspan= 12><pre> </pre><td align=center colspan= 12><pre> </pre><td align=center colspan= 12><pre> </pre><td align=center colspan= 12><pre> </pre><td align=center colspan= 12><pre> </pre><td align=center colspan= 12>IF<td align=center colspan= 12>ID<td align=center colspan= 12>EX<td align=center colspan= 12>MEM<td align=center colspan= 19>WB
+
+</table>
+
+<P ALIGN = center>
+
+<I>Рис. 5.20. Пример конфликта по записи в регистровый файл</I>
+
+<P>
+
+Имеется два способа для обхода этого конфликта. Первый заключается в отслеживании использования порта записи на ступени ID конвейера и приостановке выдачи команды как при структурном конфликте. Схема обнаружения такого конфликта обычно реализуется с помощью сдвигового регистра. Альтернативная схема предполагает приостановку конфликтующей команды, когда она пытается попасть на ступень MEM конвейера. Преимуществом такой схемы является то, что она не требует обнаружения конфликта до входа на ступень MEM, где это легче сделать. Однако подобная реализация усложняет управление конвейером, поскольку приостановки в этом случае могут возникать в двух разных местах конвейера.
+
+<P>
+
+Другой проблемой является возможность конфликтов типа WAW. Можно рассмотреть тот же пример, что и на рис. 5.20. Если бы команда LD была выдана на один такт раньше и имела в качестве месторасположения результата регистр F2, то возник бы конфликт типа WAW, поскольку эта команда выполняла бы запись в регистр F2 на один такт раньше команды ADDD. Имеются два способа обработки этого конфликта типа WAW. Первый подход заключается в задержке выдачи команды загрузки до момента передачи команды ADDD на ступень MEM. Второй подход заключается в подавлении результата операции сложения при обнаружении конфликта и изменении управления таким образом, чтобы команда сложения не записывала свой результат. Тогда команда LD может выдаваться для выполнения сразу же. Поскольку такой конфликт является редким, обе схемы будут работать достаточно хорошо. В любом случае конфликт может быть обнаружен на ранней стадии ID, когда команда LD выдается для выполнения. Тогда приостановка команды LD или установка блокировки записи результата командой ADDD реализуются достаточно просто.
+
+<P>
+
+Таким образом, для обнаружения возможных конфликтов необходимо рассматривать конфликты между командами ПТ, а также конфликты между командами ПТ и целочисленными командами. За исключением команд загрузки/записи с ПТ и команд пересылки данных между регистрами ПТ и целочисленными регистрами, команды ПТ и целочисленные команды достаточно хорошо разделены, и все целочисленные команды работают с целочисленными регистрами, а команды ПТ - с регистрами ПТ. Таким образом, для обнаружения конфликтов между целочисленными командами и командами ПТ необходимо рассматривать только команды загрузки/записи с ПТ и команды пересылки регистров ПТ. Это упрощение управления конвейером является дополнительным преимуществом поддержания отдельных регистровых файлов для хранения целочисленных данных и данных с ПТ. (Главное преимущество заключается в удвоении общего количества регистров и увеличении пропускной способности без увеличения числа портов в каждом наборе). Если предположить, что конвейер выполняет обнаружение всех конфликтов на стадии ID, перед выдачей команды для выполнения в функциональные устройства должны быть выполнены три проверки:
+
+<OL TYPE = 1>
+
+<LI><I>Проверка наличия структурных конфликтов.</I> Ожидание освобождения функционального устройства и порта записи в регистры, если он потребуется.
+
+<LI><I>Проверка наличия конфликтов по данным типа RAW.</I> Ожидание до тех пор, пока регистры-источники операндов указаны в качестве регистров результата на конвейерных станциях ID/EX (которая соответствует команде, выданной в предыдущем такте), EX1/EX2 или EX/MEM.
+
+<LI><I>Проверка наличия конфликтов типа WAW.</I> Проверка того, что команды, находящиеся на конвейерных станциях EX1 и EX2, не имеют в качестве месторасположения результата регистр результата выдаваемой для выполнения команды. В противном случае выдача команды, находящейся на ступени ID, приостанавливается.
+
+</OL>
+
+<P>
+
+Хотя логика обнаружения конфликтов для многотактных операций ПТ несколько более сложная, концептуально она не отличается от такой же логики для целочисленного конвейера. То же самое касается логики для ускоренной пересылки данных. Логика ускоренной пересылки данных может быть реализована с помощью проверки того, что указанный на конвейерных станциях EX/MEM и MEM/WB регистр результата является регистром операнда команды ПТ. Если происходит такое совпадение, для пересылки данных разрешается прием по соответствующему входу мультиплексора. Многотактные операции ПТ создают также новые проблемы для механизма прерывания.
+
+<P>
+
+<B>Поддержка точных прерываний</B>
+
+<P>
+
+Другая проблема, связанная с реализацией команд с большим временем выполнения, может быть проиллюстрирована с помощью следующей последовательности команд:
+
+<P>
+
+DIVF F0,F2,F4
+
+<P>
+
+ADDF F10,F10,F8
+
+<P>
+
+SUBF F12,F12,F14
+
+<P>
+
+Эта последовательность команд выглядит очень просто. В ней отсутствуют какие-либо зависимости. Однако она приводит к появлению новых проблем из-за того, что выданная раньше команда может завершиться после команды, выданной для выполнения позже. В данном примере можно ожидать, что команды ADDF и SUBF завершаться раньше, чем завершится команда DIVF. Этот эффект является типичным для конвейеров команд с большим временем выполнения и называется <I>внеочередным завершением команд (out-of-order completion)</I>. Тогда, например, если команда DIVF вызовет арифметическое прерывание после завершения команды ADDF, мы не сможем реализовать точное прерывание на уровне аппаратуры. В действительности, поскольку команда ADDF меняет значение одного из своих операндов, невозможно даже с помощью программных средств восстановить состояние, которое было перед выполнением команды DIVF.
+
+<P>
+
+Имеются четыре возможных подхода для работы в условиях внеочередного завершения команд. Первый из них просто игнорирует проблему и предлагает механизмы неточного прерывания. Этот подход использовался в 60-х и 70-х годах и все еще применяется в некоторых суперкомпьютерах, в которых некоторые классы прерываний запрещены или обрабатываются аппаратурой без остановки конвейера. Такой подход трудно использовать в современных машинах при наличии концепции виртуальной памяти и стандарта на операции с плавающей точкой IEEE, которые требуют реализации точного прерывания путем комбинации аппаратных и программных средств. В некоторых машинах эта проблема решается путем введения двух режимов выполнения команд: быстрого, но с возможно не точными прерываниями, и медленного, гарантирующего реализацию точных прерываний.
+
+<P>
+
+Второй подход заключается в буферизации результатов операции до момента завершения выполнения всех команд, предшествовавших данной. В некоторых машинах используется этот подход, но он становится все более дорогостоящим, если отличия во времени выполнения разных команд велики, поскольку становится большим количество результатов, которые необходимо буферизовать. Более того, результаты из этой буферизованной очереди необходимо пересылать для обеспечения продолжения выдачи новых команд. Это требует большого количества схем сравнения и многовходовых мультиплексоров. Имеются две вариации этого основного подхода. Первая называется буфером истории (history file), использовавшемся в машине CYBER 180/990. Буфер истории отслеживает первоначальные значения регистров. Если возникает прерывание и состояние машины необходимо откатить назад до точки, предшествовавшей некоторым завершившимся вне очереди командам, то первоначальное значение регистров может быть восстановлено из этого буфера истории. Подобная методика использовалась также при реализации автоинкрементной и автодекрементной адресации в машинах типа VAX. Другой подход называется буфером будущего (future file). Этот буфер хранит новые значения регистров. Когда все предшествующие команды завершены, основной регистровый файл обновляется значениями из этого буфера. При прерывании основной регистровый файл хранит точные значения регистров, что упрощает организацию прерывания. В следующей главе будут рассмотрены некоторые расширения этой идеи.
+
+<P>
+
+Третий используемый метод заключается в том, чтобы разрешить в ряде случаев неточные прерывания, но при этом сохранить достаточно информации, чтобы подпрограмма обработки прерывания могла выполнить точную последовательность прерывания. Это предполагает наличие информации о находившихся в конвейере командах и их адресов. Тогда после обработки прерывания, программное обеспечение завершает выполнение всех команд, предшествовавших последней завершившейся команде, а затем последовательность может быть запущена заново. Рассмотрим следующий наихудший случай:
+
+<P>
+
+<I>Команда 1</I> - длинная команда, которая в конце концов вызывает прерывание
+
+<P>
+
+<I>Команда 2, ... , Команда n-1</I> - последовательность команд, выполнение которых не завершилось
+
+<P>
+
+<I>Команда n</I> - команда, выполнение которой завершилось
+
+<P>
+
+Имея значения адресов всех команд в конвейере и адрес возврата из прерывания, программное обеспечение может определить состояние команды 1 и команды n. Поскольку команда n завершила выполнение, хотелось бы продолжить выполнение с команды n+1. После обработки прерывания программное обеспечение должно смоделировать выполнение команд с 1 по n-1. Тогда можно осуществить возврат из прерывания на команду n+1. Наибольшая неприятность такого подхода связана с усложнением подпрограммы обработки прерывания. Но для простых конвейеров, подобных рассмотренному нами, имеются и упрощения. Если команды с 2 по n все являются целочисленными, то мы просто знаем, что в случае завершения выполнения команды n, все команды с 2 по n-1 также завершили выполнение. Таким образом, необходимо обрабатывать только операцию с плавающей точкой. Чтобы сделать эту схему работающей, количество операций ПТ, выполняющихся с совмещением, может быть ограничено. Например, если допускается совмещение только двух операций, то только прерванная команда должна завершаться программными средствами. Это ограничение может снизить потенциальную пропускную способность, если конвейеры плавающей точки являются достаточно длинными или если имеется значительное количество функциональных устройств. Такой подход использовался в архитектуре SPARC, позволяющей совмещать выполнение целочисленных операций с операциями плавающей точки.
+
+<P>
+
+Четвертый метод представляет собой гибридную схему, которая позволяет продолжать выдачу команд только если известно, что все команды, предшествовавшие выдаваемой, будут завершены без прерывания. Это гарантирует, что в случае возникновения прерывания ни одна следующая за ней команда не будет завершена, а все предшествующие будут завершены. Иногда это означает необходимость приостановки машины для поддержки точных прерываний. Чтобы эта схема работала, необходимо, чтобы функциональные устройства плавающей точки определяли возможность появления прерывания на самой ранней стадии выполнения команд так, чтобы предотвратить завершение выполнения следующих команд. Такая схема используется, например, в микропроцессорах R2000/R3000 и R4000 компании MIPS.
+
+
+
+<p><center><font size="-1">
+
+[<a href="glava_4.htm">Предыдущая глава</a>] [<a href="contents.htm">Оглавление</a>] [<a href="glava_6.htm">Следующая глава</a>]
+
+</font></center>
+
+</body></html>
+

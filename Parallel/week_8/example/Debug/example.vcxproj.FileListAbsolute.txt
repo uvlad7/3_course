@@ -1,0 +1,2 @@
+D:\3 course\Parallel\week_8\example\Debug\example.exe
+D:\3 course\Parallel\week_8\example\Debug\example.pdb

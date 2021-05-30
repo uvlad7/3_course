@@ -1,0 +1,11 @@
+1. Reformat code
+2. Замена мьютекса на критическую секцию
+	Глобальная переменная CRITICAL_SECTION cs (но мютекс не удаляем, он для контроля числа экземпляров)
+	InitializeCriticalSection(&cs) при старте приложения
+	Edit WndProc_OnPaint
+	Edit PaintRectangle, PaintEllipse, create PaintX
+	Исправление SuspendEllipse и переделка SuspendRectangle (минимум кода в критической секции)
+	Add SuspendX
+3. Add TerminateRectangle and X
+4. Исправление WndProc_OnDestroy - учесть случай, когда поток остановлен
+5. Исправление Suspend - учесть случай, когда поток остановлен

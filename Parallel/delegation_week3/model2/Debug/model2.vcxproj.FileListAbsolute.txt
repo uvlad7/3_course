@@ -1,0 +1,2 @@
+D:\3 course\Parallel\delegation_week3\model2\Debug\model2.exe
+D:\3 course\Parallel\delegation_week3\model2\Debug\model2.pdb

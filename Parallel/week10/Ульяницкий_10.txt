@@ -1,0 +1,124 @@
+# №1
+
+#include <iostream>
+#include <list>
+#include <mutex>
+
+std::list<int> some_list = { 7, 5, 16, 8 };
+std::mutex m;
+
+void add_to_list(int new_value) { 
+    std::lock_guard<std::mutex> lk(m);
+    some_list.push_back(new_value);
+}
+
+bool list_contains(int value_to_find) {
+    std::lock_guard<std::mutex> lk(m);
+    return (std::find(some_list.begin(), some_list.end(), value_to_find) != some_list.end());
+}
+
+
+
+# №2
+# Не вижу смысла в этом случае в unique_lock, т. к. блокировка нужна на всё время выполнения функции (и жизни объекта lk)
+# если бы синхронизация была нужна только в части функции, то использовали бы unique_lock и его функции unlock()  lock()
+
+template<typename T>
+void my_own_cout(const T& out) {
+    std::lock_guard<std::mutex> lk(m2);
+    std::cout << out;
+}
+
+int main()
+{
+    std::thread th1(my_own_cout<std::string>, "Hello world 1\n");
+    my_own_cout<std::string>("Hello world\n");
+    std::thread th2(my_own_cout<std::string>, "Hello world 2\n");
+    std::thread th3(my_own_cout<std::string>, "Hello world 3\n");
+    th1.join();
+    th2.join();
+    th3.join();
+    getchar();
+    return 0;
+}
+
+# №3
+
+
+# имееются места для парковки и машины, машины пытаются припарковаться (через случайное время),
+# если свободных мест нет, то "уезжают", если есть, то занимают его и через произвольное время уезжают. 
+# По-хорошему время должно считываться с консоли, по быстрому случайно задаётся. Количество машин в принципе не используется
+package sample;
+
+public class CarPark {
+    private static final Object mutex = new Object();
+    private static int places, cars;
+    private static boolean[] PARKING_PLACES;
+    private static boolean[] PARKED_CARS;
+
+    public static void main(String[] args) throws InterruptedException {
+
+        places = 100;
+        cars = 150;
+        PARKING_PLACES = new boolean[places];
+        PARKED_CARS = new boolean[cars];
+        for (int i = 1; i <= cars; i++) {
+            new Thread(new CarParker(i)).start();
+        }
+    }
+
+    public static class CarParker implements Runnable {
+        private int carNumber;
+
+        public CarParker(int carNumber) {
+            this.carNumber = carNumber;
+        }
+
+        @Override
+        public void run() {
+            try {
+                Thread.sleep((int) (Math.random() * (100)) + 10);
+                System.out.printf("Car №%d arrived\n", carNumber);
+                synchronized (mutex) {
+                    for (int i = 0; i < PARKING_PLACES.length; i++)
+                        if (!PARKING_PLACES[i]) {
+                            PARKING_PLACES[i] = true;
+                            System.out.printf("Car №%d at %d.\n", carNumber, i);
+                            new Thread(new CarDeparturer(carNumber, i)).start();
+                            break;
+                        }
+                }
+
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
+
+    public static class CarDeparturer implements Runnable {
+        private int carNumber;
+        private int parkingNumber;
+
+        public CarDeparturer(int carNumber, int parkingNumber) {
+            this.carNumber = carNumber;
+            this.parkingNumber = parkingNumber;
+        }
+
+        @Override
+        public void run() {
+            try {
+                Thread.sleep((int) (Math.random() * (100)) + 10);
+                System.out.printf("Car №%d ready to departure\n", carNumber);
+                synchronized (mutex) {
+                    PARKING_PLACES[parkingNumber] = false;
+                    System.out.printf("Car №%d departured from  №%d.\n", carNumber, parkingNumber);
+                }
+
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
+}

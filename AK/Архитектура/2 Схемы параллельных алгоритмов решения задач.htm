@@ -1,0 +1,1188 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0045)http://www.ssd.sscc.ru/korneev/MPI_3.html#2_4 -->
+<HTML><HEAD><TITLE>2 Схемы параллельных алгоритмов решения задач</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=windows-1251">
+<META content="MSHTML 6.00.6000.16809" name=GENERATOR>
+<META content="Mozilla/4.5 [en] (Win95; I) [Netscape]" name=GENERATOR></HEAD>
+<BODY><B><FONT face=Garamond><FONT size=+4>2</FONT><FONT size=+2> Схемы 
+параллельных алгоритмов задач</FONT></FONT></B> 
+<P align=justify><FONT face="Times New Roman"><FONT size=+0>В главе приводятся 
+примеры параллельных алгоритмов решения следующих задач: умножения матрицы на 
+матрицу, задача Дирихле, решение систем линейных уравнений (СЛАУ) методом Гаусса 
+и методом простой итерации. Здесь рассматривается простой вариант сеточной 
+задачи (задача Дирихле), когда шаг сетки в пространстве вычислений одинаков и не 
+меняется в процессе вычислений. При динамически изменяющемся шаге сетки, как 
+было сказано во введении в секции 1.2, потребовалось бы решать такую задачу 
+параллельного программирования, как перебалансировка вычислительного 
+пространства между компьютерами, для выравнивания вычислительной нагрузки 
+компьютеров, а эта задача здесь не рассматривается.</FONT></FONT> 
+<P align=justify><FONT size=+0><FONT face="Times New Roman">В этой главе 
+приводятся только общие схемы решения указанных задач, а тексты программ 
+приведены в главе 9, т.к. для понимания общих схем решения знать </FONT>MPI<FONT 
+face="Times New Roman"> не обязательно, а для понимания программ необходимо, что 
+бы пользователь предварительно ознакомился с системой программирования 
+</FONT>MPI<FONT face="Times New Roman">. Приведенные здесь параллельные 
+алгоритмы решения задач являются иллюстрационными, демонстрирующими применение и 
+возможности функций </FONT>MPI<FONT face="Times New Roman">, а не 
+универсальными, предназначенными для библиотек алгоритмов.</FONT></FONT> 
+<P align=justify><FONT size=+0><FONT face="Times New Roman">Рассматриваемые 
+задачи <I>распараллеливаются крупнозернистыми методами</I>. Для представления 
+алгоритмов используется </FONT>SPMD-<FONT 
+face="Times New Roman">модельвычислений</FONT> (<I><FONT 
+face="Times New Roman">распараллеливание по данным</FONT></I></FONT><I>).</I> 
+Однородное распределение данных по компьютерам - основа для хорошего баланса 
+времени, затрачиваемого на вычисления, и времени, затрачиваемого на 
+взаимодействия ветвей параллельной программы. При таком распределении 
+преследуется цель: равенство объёмов распределяемых частей данных и соответствие 
+нумерации распределяемых частей данных нумерации компьютеров в системе. 
+Исходными данными рассматриваемых здесь алгоритмов являются матрицы, векторы 
+и<I> 2</I><FONT size=+0>D<FONT face="Times New Roman"> (двумерное) пространство 
+вычислений. В этих алгоритмах применяются следующие способы однородного 
+распределения данных: <I>горизонтальными полосами</I></FONT>, <I><FONT 
+face="Times New Roman">вертикальными полосами</FONT></I></FONT><I> и 
+циклическими горизонтальными полосами.</I> При распределении горизонтальными 
+полосами матрица, вектор или<I> 2</I><FONT size=+0>D<FONT 
+face="Times New Roman"> пространство "разрезается" на полосы по строкам (далее 
+слово "разрезанная" будем писать без кавычек и матрицу, вектор или 
+2</FONT>D<FONT face="Times New Roman"> пространство обозначать для краткости 
+словом - <U>данные</U>). Пусть </FONT><I>M</I><FONT face="Times New Roman"> - 
+количество строк матрицы, количество элементов вектора или количество строк 
+узлов 2</FONT>D <FONT face="Times New Roman">пространства, </FONT><I>P</I><FONT 
+face="Times New Roman"> - количество виртуальных компьютеров в системе, <I>С1 = 
+М</I> /<I>Р</I></FONT></FONT><I> -</I> целая часть от деления,<I> С2 = М<FONT 
+size=+0> </FONT>%<FONT face="Times New Roman"><FONT size=+0>Р</FONT></FONT> - 
+</I>дробная часть. <U>Данные</U> разрезаются на<I> Р </I>полос. Первые <I>(Р-С2) 
+</I>полос имеют по<I> С1 </I>строки, а остальные<I> С2 </I>полосы имеют по<I> 
+С1+1</I> строки. Полосы <U>данных</U> распределяются по компьютерам следующим 
+образом. Первая полоса помещается в компьютер с номером 0, вторая полоса - в 
+компьютер 1, и т. д. Такое распределение полос по компьютерам учитывается в 
+параллельном алгоритме. Распределение вертикальными полосами аналогично 
+предыдущему, только в распределении участвуют столбцы матрицы или столбцы 
+узлов<I> 2</I><FONT size=+0>D <FONT face="Times New Roman">пространства. И, 
+наконец, распределение циклическими горизонтальными полосами. При таком 
+распределении <U>данные</U> разрезаются на количество полос значительно большее, 
+чем количество компьютеров. И чаще всего полоса состоит из одной строки. Первая 
+полоса загружается в компьютер 0, вторая - в компьютер 1, и т.д., затем, 
+<I>Р-1-</I>я полоса снова в компьютер</FONT> 0, <I><FONT 
+face="Times New Roman">Р-</FONT></I></FONT><I>я </I>полоса в компьютер 1, и т.д. 
+
+<P align=justify>Приведенные два алгоритма решения СЛАУ методом Гаусса 
+показывают, что однородность распределения данных сама по себе еще недостаточна 
+для эффективности алгоритма. Эффективность алгоритмов зависит еще и от способа 
+распределения данных. Разный способ представления данных влечет, соответственно, 
+и разную организацию алгоритмов, обрабатывающих эти данные. 
+<P align=justify>В книге эффективность рассматриваемых алгоритмов определяется 
+упрощенными формулами, которые дают грубую оценку эффективности. Это связано с 
+тем, что здесь не рассматриваются конкретные вычислительные системы. Точные 
+замеры эффективности конкретного параллельного алгоритма могут быть сделаны на 
+конкретной вычислительной системе на некотором наборе данных. Эффективность 
+параллельных алгоритмов зависит, во-первых, от вычислительной системы, на 
+которой выполняется задача, а, во-вторых, от структуры самих алгоритмов. Она 
+определяется как отношение времени реализации параллельного алгоритма задачи ко 
+времени реализации последовательного алгоритма этой же задачи. Эффективность 
+можно измерять и соотношением между временем, затраченным на обмен данными между 
+процессами, и общим временем вычислений. Заметим, что эффективность алгоритмов, 
+которые имеют глобальный обмен данными, снижается с ростом числа параллельных 
+ветвей, т.к. с ростом числа компьютеров в системе, скорость выполнения 
+глобальной операции обмена будет падать. К таким задачам можно отнести, 
+например, решение СЛАУ итерационными методами. Эффективность алгоритмов, у 
+которых<FONT size=+0> <FONT face="Times New Roman">обмен данными осуществляется 
+только локально, будет неизменной с ростом числа параллельных ветвей. Например, 
+это задачи, решаемые сеточными методами.</FONT></FONT><A name=2_1></A> 
+<P><B><FONT face=Garamond><FONT size=+1>2.1 Запуск параллельной 
+программы</FONT></FONT></B> 
+<P align=justify><FONT face="Times New Roman"><FONT size=+0>В пункте 1.3 было 
+употреблены понятия: - виртуальный компьютер и виртуальная топология. Под 
+<I>виртуальным компьютером</I> понимается программно реализуемый компьютер. 
+Виртуальный компьютер работает в режиме интерпретации его физическим 
+процессором. В одном физическом компьютере может находиться и работать 
+одновременно виртуальных компьютеров - столько, сколько позволяет память 
+физического компьютера. Работают виртуальные компьютеры в одном физическом в 
+режиме квантования времени. Под <I>виртуальной топологией</I> здесь понимается 
+программно реализуемая топология связей между виртуальными компьютерами на 
+физической системе. Подробное описание виртуальной топологии представлено в 
+главе 4.</FONT></FONT> 
+<P align=justify><FONT size=+0><FONT face="Times New Roman">Создаваемая 
+пользователем виртуальная среда позволяет обеспечивать хорошую переносимость 
+параллельных программ, а значит и независимость от конкретных вычислительных 
+систем. Для пользователя очень удобно решать свою задачу в рамках виртуальной 
+среды, использовать столько компьютеров, сколько необходимо для решения его 
+задачи и задавать такую топологию связей между компьютерами, какая необходима. 
+(При решении</FONT> <FONT face="Times New Roman">задачи на системе с небольшим 
+количеством процессоров, в одном физическом компьютере может оказаться много 
+виртуальных компьютеров. При интерпретации виртуальных компьютеров физическим 
+процессором естественно тратится непроизводительное время на переключение с 
+одного виртуального компьютера на другой).</FONT></FONT> 
+<P align=justify><FONT face="Times New Roman"><FONT size=+0>Запуск параллельной 
+программы продемонстрируем на примере. Допустим, требуется решить задачу 
+</FONT></FONT><FONT face="Courier New"><FONT 
+size=-1>program.c</FONT></FONT><FONT face="Times New Roman"><FONT size=+0>. 
+Алгоритм задачи распараллелен на </FONT></FONT><FONT face="Courier New"><FONT 
+size=-1>N</FONT></FONT><FONT face="Times New Roman"><FONT size=+0> процессов, 
+независимо выполняющихся и взаимодействующих друг с другом. Задана нужная для 
+решения задачи топология связей между этими процессами: - </FONT></FONT><FONT 
+face="Courier New"><FONT size=-1>top</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0> (например, двумерная решетка). Для решения 
+этой задачи было бы оптимально иметь вычислительную систему из 
+</FONT></FONT><FONT face="Courier New"><FONT size=-1>N</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0> компьютеров, с той же структурой связей, 
+что и </FONT></FONT><FONT face="Courier New"><FONT 
+size=-1>top</FONT></FONT><FONT face="Times New Roman"><FONT size=+0>. Далее в 
+каждый компьютер необходимо загрузить по одному исполняемому модулю, 
+реализующему ветвь параллельной программы, и стартовать эти модули. Ветви 
+параллельной программы могут реализовываться копиями одной и той же программы, а 
+могут реализовываться разными программами. Загрузка в систему разных вариантов 
+таких параллельных процессов определяется соответствующими опциями в командной 
+строке оператора загрузки. Опции и подробности загрузки нужно смотреть в 
+соответствующих инструкциях.</FONT></FONT> 
+<P align=justify><FONT face="Times New Roman"><FONT size=+0>Программа 
+предварительно компилируется:</FONT></FONT> 
+<DIR>
+<CENTER><FONT face="Courier New"><FONT size=-1>mpicc [ ] -o program.exe 
+program.c</FONT></FONT></CENTER></DIR>
+<P align=justify><FONT face="Times New Roman"><FONT size=+0>В квадратных скобках 
+стоят опции нужной оптимизации. Для разных программ, разных компьютеров в 
+вычислительной системе, для одинаковых компьютеров, но с разными операционными 
+системами, нужно осуществлять отдельную компиляцию.</FONT></FONT> 
+<P align=justify><FONT size=+0><FONT face="Times New Roman">Большим удобством 
+для пользователя, предоставляемым </FONT>MPI, <FONT 
+face="Times New Roman">является то, что необходимые </FONT></FONT><FONT 
+face="Courier New"><FONT size=-1>N</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0> компьютеров с нужной топологией связей 
+задаются как виртуальные (программно реализуемые) и не зависят от конкретной 
+системы. Допустим, что вычислительная система имеет </FONT></FONT><FONT 
+face="Courier New"><FONT size=-1>M</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0> физических компьютеров с некоторой 
+структурой связей. Предполагается, что вычислительная система имеет одинаковые 
+компьютеры, с одинаковыми операционными системами и ветви параллельной программы 
+реализуются копиями одной и той же программы. Необходимое количество физических 
+компьютеров и виртуальных компьютеров задаются пользователем в командной 
+строке:</FONT></FONT> 
+<DIR>
+<CENTER><FONT face="Courier New"><FONT size=-1>mpirun -mashinesfile machines.s 
+-np N program.exe</FONT></FONT></CENTER></DIR>
+<P align=justify><FONT face="Times New Roman"><FONT size=+0>Опция 
+</FONT></FONT><FONT face="Courier New"><FONT size=-1>-mashinesfile 
+</FONT></FONT><FONT face="Times New Roman"><FONT size=+0>указывает системе, что 
+список физических компьютеров нужно взять в файле </FONT></FONT><FONT 
+face="Courier New"><FONT size=-1>machines.s</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0> (этот список представляет собой список IP 
+адресов машин; полагаем, что в нем указаны </FONT></FONT><FONT 
+face="Courier New"><FONT size=-1>M</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0> компьютеров). </FONT></FONT><FONT 
+face="Courier New"><FONT size=-1>N = {1,2,3,...}</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0> - указывает количество виртуальных 
+компьютеров, необходимых для решения рассматриваемой программы с именем - 
+</FONT></FONT><FONT face="Courier New"><FONT 
+size=-1>program.exe</FONT></FONT><FONT face="Times New Roman"><FONT size=+0>. По 
+этой команде система MPI создает (в оперативной памяти системы из 
+</FONT></FONT><FONT face="Courier New"><FONT size=-1>M</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0> физических компьютеров) 
+</FONT></FONT><FONT face="Courier New"><FONT size=-1>N</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0> виртуальных компьютеров, объединенных 
+виртуальными каналами связи со структурой <I>полный граф</I>. И этой группе 
+виртуальных компьютеров присваивается стандартное системное имя 
+</FONT></FONT><FONT face="Courier New"><FONT 
+size=-1>MPI_COMM_WORLD</FONT></FONT><FONT face="Times New Roman"><FONT size=+0> 
+(смотри главу 4). После чего пользовательская программа </FONT></FONT><FONT 
+face="Courier New"><FONT size=-1>program.exe</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0> загружается в память каждого из созданных 
+виртуальных компьютеров и стартует. (</FONT></FONT><FONT 
+face="Courier New"><FONT size=-1>program.exe</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0> предварительно должна находиться во всех 
+физических компьютерах в соответствующей директории). Если </FONT></FONT><FONT 
+face="Courier New"><FONT size=-1>M &lt; N</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0>, то в некоторых (или всех) физических 
+компьютерах будет создано несколько виртуальных. Виртуальные компьютеры, 
+расположенные в одном физическом, будут работать в режиме интерпретации их 
+физическим процессором с разделением времени. Созданные виртуальные компьютеры 
+имеют линейную нумерацию - </FONT></FONT><FONT face="Courier New"><FONT 
+size=-1>{0,1,2,3,...}</FONT></FONT><FONT face="Times New Roman"><FONT size=+0>, 
+и являются базой для создания различных виртуальных топологий, например, 
+</FONT></FONT><FONT face="Courier New"><FONT size=-1>top</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0> (смотри главу 4), необходимых для 
+реализации конкретных задач, причем со своей внутренней нумерацией виртуальных 
+компьютеров. (Эта идентификация виртуальных компьютеров в различных структурах и 
+тип топологии связи позволяют "ориентироваться" в системе связей компьютеров 
+копиям пользовательской программы </FONT></FONT><FONT face="Courier New"><FONT 
+size=-1>program.exe</FONT></FONT><FONT size=+0>).</FONT> 
+<P align=justify><FONT size=+0><FONT face="Times New Roman">Отображение 
+виртуальных компьютеров и структуры их связи на конкретную физическую систему 
+осуществляется системой MPI автоматически, т.е. пользователю не нужно 
+переделывать свою программу для разных физических систем (с другими компьютерами 
+и другой архитектурой). (Рассматриваемая версия</FONT> <FONT 
+face="Times New Roman">MPI не позволяет пользователю осуществлять это 
+отображение, либо осуществлять пересылку виртуальных компьютеров в другие 
+физические компьютеры, т.е. не позволяет перераспределять виртуальные компьютеры 
+по физическим компьютерам). Везде далее, используя слово компьютер, мы будем 
+иметь в виду виртуальный компьютер, если особо не оговаривается 
+противное.</FONT></FONT><A name=2_2></A> 
+<P><B><FONT face=Garamond><FONT size=+1>2.2&nbsp; Умножение матрицы на 
+матрицу</FONT></FONT></B> 
+<P align=justify><FONT face="Times New Roman"><FONT size=+0>Умножение матрицы на 
+вектор и матрицы на матрицу являются базовыми макрооперациями для многих задач 
+линейной алгебры, например итерационных методов решения систем линейных 
+уравнений и т. п. Поэтому приведенные алгоритмы можно рассматривать как 
+фрагменты в алгоритмах этих методов. В этой секции приведено три алгоритма 
+умножения матрицы на матрицу. Разнообразие вариантов алгоритмов проистекает от 
+разнообразия вычислительных систем и размеров задач. Рассматриваются и разные 
+варианты загрузки <U>данных</U> в систему: загрузка данных через один компьютер; 
+и загрузка данных непосредственно каждым компьютером с дисковой памяти. Если 
+загрузка <U>данных</U> осуществляется через один компьютер, то <U>данные</U> 
+считываются этим компьютером с дисковой памяти, разрезаются и части рассылаются 
+по остальным компьютерам. Но <U>данные</U> могут быть подготовлены и заранее, 
+т.е. заранее разрезаны по частям и каждая часть записана на диск в виде 
+отдельного файла со своим именем; затем каждый компьютер непосредственно 
+считывает с диска, предназначенный для него файл.</FONT></FONT> 
+<P><B><FONT face=Garamond>2.2.1&nbsp; Алгоритм 1</FONT></B> 
+<P align=justify><FONT face="Times New Roman"><FONT size=+0>Заданы две исходные 
+матрицы </FONT></FONT><FONT face="Courier New"><FONT 
+size=-1>A</FONT></FONT><FONT face="Times New Roman"><FONT size=+0> и 
+</FONT></FONT><FONT face="Courier New"><FONT size=-1>B</FONT></FONT><FONT 
+size=+0>. <FONT face="Times New Roman">Вычисляется произведение 
+</FONT></FONT><FONT face="Courier New"><FONT size=-1>C = А х 
+B</FONT></FONT><FONT face="Times New Roman"><FONT size=+0>, где 
+</FONT></FONT><FONT face="Courier New"><FONT size=-1>А</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0> - матрица </FONT></FONT><FONT 
+face="Courier New"><FONT size=-1>n<SUB>1</SUB> х 
+n<SUB>2</SUB></FONT></FONT><FONT face="Times New Roman"><FONT size=+0>, и 
+</FONT></FONT><FONT face="Courier New"><FONT size=-1>B</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0> - матрица </FONT></FONT><FONT 
+face="Courier New"><FONT size=-1>n<SUB>2</SUB> х 
+n<SUB>3</SUB></FONT></FONT><FONT face="Times New Roman"><FONT size=+0>. Матрица 
+результатов </FONT></FONT><FONT face="Courier New"><FONT 
+size=-1>C</FONT></FONT><FONT face="Times New Roman"><FONT size=+0> имеет размер 
+</FONT></FONT><FONT face="Courier New"><FONT size=-1>n<SUB>1</SUB> х 
+n<SUB>3</SUB></FONT></FONT><FONT face="Times New Roman"><FONT size=+0>. Исходные 
+матрицы предварительно разрезаны на полосы, полосы записаны на дисковую память 
+отдельными файлами со своими именами и доступны всем компьютерам. Матрица 
+результатов возвращается в нулевой процесс.</FONT></FONT> 
+<P align=justify><FONT face="Times New Roman"><FONT size=+0>Реализация алгоритма 
+выполняется на кольце из </FONT></FONT><FONT face="Courier New"><FONT 
+size=-1>p<SUB>1</SUB></FONT></FONT><FONT face="Times New Roman"><FONT 
+size=+0>компьютеров. Матрицы разрезаны как показано на рисунке 2.1: матрица 
+</FONT></FONT><FONT face="Courier New"><FONT size=-1>А</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0> разрезана на </FONT></FONT><FONT 
+face="Courier New"><FONT size=-1>p<SUB>1</SUB></FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0> горизонтальных полос, матрица 
+</FONT></FONT><FONT face="Courier New"><FONT size=-1>B</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0> разрезана на </FONT></FONT><FONT 
+face="Courier New"><FONT size=-1>p<SUB>1</SUB></FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0> вертикальных полос, и матрица результата 
+</FONT></FONT><FONT face="Courier New"><FONT size=-1>C</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0> разрезана на </FONT></FONT><FONT 
+face="Courier New"><FONT size=-1>p<SUB>1</SUB></FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0>полосы. Здесь предполагается, что в память 
+каждого компьютера загружается и может находиться только одна полоса матрицы 
+</FONT></FONT><FONT face="Courier New"><FONT size=-1>А</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0> и одна полоса матрицы </FONT></FONT><FONT 
+face="Courier New"><FONT size=-1>B</FONT></FONT><FONT size=+0>.</FONT> 
+<BR>&nbsp; 
+<P><BR>
+<CENTER>
+<P><IMG height=100 
+src="2 Схемы параллельных алгоритмов решения задач.files/r21_1.jpg" width=392> 
+<P><B><FONT face="Times New Roman"><FONT size=+0>Рис. 2.1&nbsp; 
+</FONT></FONT>Разрезание данных для параллельного алгоритма произведения двух 
+матриц при вычислении на кольце компьютеров. Выделенные полосы расположены в 
+одном компьютере.</B></CENTER>
+<P><BR><BR><BR><BR>
+<P align=justify><FONT face="Times New Roman"><FONT size=+0>Поскольку по условию 
+в компьютерах находится по одной полосе матриц, то полосы матрицы 
+</FONT></FONT><FONT face="Courier New"><FONT size=-1>B</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0> (либо полосы матрицы </FONT></FONT><FONT 
+face="Courier New"><FONT size=-1>A</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0>) необходимо "прокрутить" по кольцу 
+компьютеров мимо полос матрицы </FONT></FONT><FONT face="Courier New"><FONT 
+size=-1>A</FONT></FONT><FONT face="Times New Roman"><FONT size=+0> (матрицы 
+</FONT></FONT><FONT face="Courier New"><FONT size=-1>B</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0>). Каждый сдвиг полос вдоль кольца и 
+соответствующее умножение представлено на рисунке 2.2 в виде отдельного шага. На 
+каждом таком шаге вычисляется только часть полосы. Процесс </FONT></FONT><FONT 
+face="Courier New"><FONT size=-1>i</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0> вычисляет на </FONT></FONT><FONT 
+face="Courier New"><FONT size=-1>j-</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0>м шаге произведение </FONT></FONT><FONT 
+face="Courier New"><FONT size=-1>i</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0>-й горизонтальной полосы матрицы 
+</FONT></FONT><FONT face="Courier New"><FONT size=-1>A</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0>и </FONT></FONT><FONT 
+face="Courier New"><FONT size=-1>j</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0>-й вертикальной полосы матрицы 
+</FONT></FONT><FONT face="Courier New"><FONT size=-1>B</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0>, произведение получено в подматрице 
+</FONT></FONT><FONT face="Courier New"><FONT size=-1>(i,j)</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0> матрицы </FONT></FONT><FONT 
+face="Courier New"><FONT size=-1>C</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0>. Текст программы, реализующий алгоритм, 
+приведен в главе 9.</FONT></FONT> 
+<P align=justify><FONT face="Times New Roman"><FONT size=+0>Последовательные 
+стадии вычислений иллюстрируются на рисунке 2.2.</FONT></FONT> 
+<UL>
+  <LI>
+  <P align=justify><FONT face="Times New Roman"><FONT size=+0>1. Каждый 
+  компьютер считывает с диска соответствующую ему полосу матрицы 
+  </FONT></FONT><FONT face="Courier New"><FONT size=-1>А</FONT></FONT><FONT 
+  face="Times New Roman"><FONT size=+0>. Нулевая полоса должна считываться 
+  нулевым компьютером, первая полоса - первым компьютером и т.д., последняя 
+  полоса - считывается последним компьютером. На рисунке 2.2 полосы матрицы 
+  </FONT></FONT><FONT face="Courier New"><FONT size=-1>А</FONT></FONT><FONT 
+  face="Times New Roman"><FONT size=+0> и </FONT></FONT><FONT 
+  face="Courier New"><FONT size=-1>B</FONT></FONT><FONT 
+  face="Times New Roman"><FONT size=+0> пронумерованы.</FONT></FONT> </P>
+  <LI>
+  <P align=justify><FONT face="Times New Roman"><FONT size=+0>2. Каждый 
+  компьютер считывает с диска соответствующую ему полосу матрицы 
+  </FONT></FONT><FONT face="Courier New"><FONT size=-1>B</FONT></FONT><FONT 
+  face="Times New Roman"><FONT size=+0>. В данном случае нулевая полоса должна 
+  считываться нулевым компьютером, первая полоса - первым компьютером и т.д., 
+  последняя полоса - считывается последним компьютером.</FONT></FONT> </P>
+  <LI>
+  <P align=justify><FONT face="Times New Roman"><FONT size=+0>3. Вычислительный 
+  шаг 1. Каждый процесс вычисляет одну подматрицу произведения. Вертикальные 
+  полосы матрицы </FONT></FONT><FONT face="Courier New"><FONT 
+  size=-1>B</FONT></FONT><FONT face="Times New Roman"><FONT size=+0> сдвигаются 
+  вдоль кольца компьютеров.</FONT></FONT> </P>
+  <LI>
+  <P align=justify><FONT face="Times New Roman"><FONT size=+0>4. Вычислительный 
+  шаг 2. Каждый процесс вычисляет одну подматрицу произведения. Вертикальные 
+  полосы матрицы </FONT></FONT><FONT face="Courier New"><FONT 
+  size=-1>B</FONT></FONT><FONT face="Times New Roman"><FONT size=+0> сдвигаются 
+  вдоль кольца компьютеров. И т.д.</FONT></FONT> </P>
+  <LI>
+  <P align=justify><FONT size=+0><FONT face="Times New Roman">5. Вычислительный 
+  шаг </FONT>p1-1<FONT face="Times New Roman">. Каждый процесс вычисляет одну 
+  подматрицу</FONT> <FONT face="Times New Roman">произведения.Вертикальные 
+  полосы матрицы </FONT></FONT><FONT face="Courier New"><FONT 
+  size=-1>B</FONT></FONT><FONT face="Times New Roman"><FONT size=+0> сдвигаются 
+  вдоль кольца компьютеров.</FONT></FONT> </P>
+  <LI>
+  <P align=justify><FONT size=+0><FONT face="Times New Roman">6. Вычислительный 
+  шаг </FONT>p1<FONT face="Times New Roman">. Каждый процесс вычисляет одну 
+  подматрицу произведения.</FONT> <FONT face="Times New Roman">Вертикальные 
+  полосы матрицы </FONT></FONT><FONT face="Courier New"><FONT 
+  size=-1>B</FONT></FONT><FONT face="Times New Roman"><FONT size=+0> сдвигаются 
+  вдоль кольца компьютеров.</FONT></FONT> </P>
+  <LI>
+  <P align=justify><FONT face="Times New Roman"><FONT size=+0>7. Матрица 
+  </FONT></FONT><FONT face="Courier New"><FONT size=-1>C</FONT></FONT><FONT 
+  face="Times New Roman"><FONT size=+0> собирается в нулевом 
+  компьютере.</FONT></FONT> </P></LI></UL>
+<CENTER>
+<P><BR><IMG height=174 
+src="2 Схемы параллельных алгоритмов решения задач.files/r2_2.jpg" width=510> 
+<P><FONT face="Courier New"><FONT size=-1>1. scatter 
+A&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+2. scatter B</FONT></FONT> 
+<P><IMG height=584 
+src="2 Схемы параллельных алгоритмов решения задач.files/r2_21.jpg" width=623> 
+<BR>&nbsp; <BR>&nbsp; 
+<P><IMG height=173 
+src="2 Схемы параллельных алгоритмов решения задач.files/r2_22.jpg" width=173 
+border=0> 
+<P><FONT face="Courier New"><FONT size=-1>7. Сбор результатов в С</FONT></FONT> 
+<P><B><FONT size=+0><FONT face="Times New Roman">Рис. </FONT>2.2 
+</FONT></B><FONT face="Times New Roman"><FONT size=+0>Стадии вычислений 
+произведения матриц в кольце компьютеров.</FONT></FONT></CENTER>
+<P><BR><BR><BR><BR>
+<P align=justify><FONT face="Times New Roman"><FONT size=+0>Если "прокручивать" 
+вертикальные полосы матрицы </FONT></FONT><FONT face="Courier New"><FONT 
+size=-1>B</FONT></FONT><FONT face="Times New Roman"><FONT size=+0>, то матрица 
+</FONT></FONT><FONT face="Courier New"><FONT size=-1>С</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0> будет распределена горизонтальными 
+полосами, а если "прокручивать" горизонтальные полосы матрицы 
+</FONT></FONT><FONT face="Courier New"><FONT size=-1>A</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0>, то матрица </FONT></FONT><FONT 
+face="Courier New"><FONT size=-1>С</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0> будет распределена вертикальными 
+полосами.</FONT></FONT> 
+<P align=justify><FONT face="Times New Roman"><FONT size=+0>Алгоритм характерен 
+тем, что после каждого шага вычислений осуществляется обмен <U>данными</U>. 
+Пусть </FONT></FONT><FONT face="Courier New"><FONT 
+size=-1>t<SUB>u</SUB></FONT></FONT><FONT size=+0>, </FONT><FONT 
+face="Courier New"><FONT size=-1>t<SUB>u</SUB></FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0>, и </FONT></FONT><FONT 
+face="Courier New"><FONT size=-1>t<SUB>p</SUB></FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0> время операций, соответственно, умножения, 
+сложения и пересылки одного числа в соседний компьютер. Согласно приведенным в 
+начале секции обозначениям суммарное время операций умножений 
+равно:</FONT></FONT> 
+<CENTER>
+<P><FONT face="Courier New"><FONT size=-1>U = 
+(n<SUB>1</SUB>*n<SUB>2</SUB>)*(n<SUB>3</SUB>*n<SUB>2</SUB>)*t<SUB>u</SUB></FONT></FONT><FONT 
+size=+0>,</FONT></CENTER>
+<P><FONT face="Times New Roman"><FONT size=+0>суммарное время операций сложений 
+равно:</FONT></FONT> 
+<DIR>
+<CENTER><FONT face="Courier New"><FONT size=-1>S = 
+(n<SUB>1</SUB>*n<SUB>2</SUB>)*(n<SUB>3</SUB>*(n<SUB>2</SUB>-1))*t<SUB>s</SUB>,</FONT></FONT></CENTER></DIR><FONT 
+face="Times New Roman"><FONT size=+0>суммарное время операций пересылок данных 
+по всем компьютерам равно:</FONT></FONT> 
+<DIR>
+<CENTER><FONT face="Courier New"><FONT size=-1>P = 
+(n<SUB>3</SUB>*n<SUB>2</SUB>)*(p<SUB>1</SUB>-1)*t<SUB>p</SUB>.</FONT></FONT></CENTER></DIR><FONT 
+face="Times New Roman"><FONT size=+0>Тогда общее время вычислений будет 
+равно:</FONT></FONT> 
+<CENTER>
+<P><FONT face="Courier New"><FONT size=-1>T = 
+(U+S+P)/p<SUB>1</SUB></FONT></FONT></CENTER>
+<P><FONT face="Times New Roman"><FONT size=+0>И отношение времени "вычислений 
+без обменов" к общему времени вычислений есть величина:</FONT></FONT> 
+<CENTER>
+<P><FONT face="Courier New"><FONT size=-1>K = (U+S)/(U+S+P)</FONT></FONT><FONT 
+size=+0>.</FONT></CENTER>
+<P align=justify><FONT face="Times New Roman"><FONT size=+0>Если, время передачи 
+<U>данных</U> велико по сравнению с временем вычислений, либо каналы передачи 
+данных медленные, то эффективность алгоритма будет не высока. Здесь не 
+учитывается время начальной загрузки и выгрузки <U>данных</U> в память системы. 
+В полосах матриц могут быть разное количество строк (различие в одну строку). 
+При больших матрицах этим можно пренебречь.</FONT></FONT> 
+<P align=justify><FONT face="Times New Roman"><FONT size=+0>При достаточных 
+ресурсах памяти в системе, конечно же, лучше использовать алгоритм, в котором 
+минимизированы обмены между компьютерами в процессе вычислений. Это достигается 
+за счет дублирования некоторых <U>данных</U> в памяти компьютеров. В следующих 
+двух алгоритмах используется этот подход.</FONT></FONT> 
+<P><B><FONT face=Garamond>2.2.2 Алгоритм 2</FONT></B> 
+<P align=justify><FONT face="Times New Roman"><FONT size=+0>Вычисляется 
+произведение </FONT></FONT><FONT face="Courier New"><FONT size=-1>C = А х 
+B</FONT></FONT><FONT face="Times New Roman"><FONT size=+0>, где 
+</FONT></FONT><FONT face="Courier New"><FONT size=-1>А</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0> - матрица </FONT></FONT><FONT 
+face="Courier New"><FONT size=-1>n<SUB>1</SUB> х 
+n<SUB>2</SUB></FONT></FONT><FONT face="Times New Roman"><FONT size=+0>, и 
+</FONT></FONT><FONT face="Courier New"><FONT size=-1>B</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0> - матрица </FONT></FONT><FONT 
+face="Courier New"><FONT size=-1>n<SUB>2</SUB> х 
+n<SUB>3</SUB></FONT></FONT><FONT face="Times New Roman"><FONT size=+0>. Матрица 
+результатов </FONT></FONT><FONT face="Courier New"><FONT 
+size=-1>C</FONT></FONT><FONT face="Times New Roman"><FONT size=+0> имеет размер 
+</FONT></FONT><FONT face="Courier New"><FONT size=-1>n<SUB>1</SUB> х 
+n<SUB>3</SUB></FONT></FONT><FONT face="Times New Roman"><FONT size=+0>. Исходные 
+матрицы первоначально доступны на нулевом процессе, и матрица результатов 
+возвращена в нулевой процесс.</FONT></FONT> 
+<P align=justify><FONT size=+0><FONT face="Times New Roman">Параллельное 
+выполнение алгоритма осуществляется на двумерной (2</FONT>D<FONT 
+face="Times New Roman">) решетке компьютеров размером</FONT></FONT><FONT 
+face="Courier New"><FONT size=-1> p<SUB>1</SUB> х 
+p<SUB>2</SUB></FONT></FONT><FONT face="Times New Roman"><FONT size=+0>. Матрицы 
+разрезаны, как показано на рисунке 2.3: матрица </FONT></FONT><FONT 
+face="Courier New"><FONT size=-1>А</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0> разрезана на </FONT></FONT><FONT 
+face="Courier New"><FONT size=-1>p<SUB>1</SUB></FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0> горизонтальных полос, матрица 
+</FONT></FONT><FONT face="Courier New"><FONT size=-1>B</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0> разрезана на </FONT></FONT><FONT 
+face="Courier New"><FONT size=-1>p<SUB>2</SUB></FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0> вертикальных полос, и матрица результата 
+</FONT></FONT><FONT face="Courier New"><FONT size=-1>C</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0> разрезана на </FONT></FONT><FONT 
+face="Courier New"><FONT size=-1>p<SUB>1 </SUB>х</FONT></FONT><SUB>p2</SUB><FONT 
+face="Times New Roman"><FONT size=+0> подматрицы (или субматрицы).</FONT></FONT> 
+
+<CENTER>
+<P><IMG height=124 
+src="2 Схемы параллельных алгоритмов решения задач.files/r2_3.jpg" 
+width=370></CENTER><FONT face="Courier New"><FONT 
+size=-1>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+A&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+B&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; C</FONT></FONT> 
+<CENTER>
+<P><B><FONT face="Times New Roman"><FONT size=+0>Рис. 2.3&nbsp; 
+</FONT></FONT>Разрезание данных для параллельного алгоритма произведения двух 
+матриц при вычислении в 2<FONT size=+0>D<FONT face="Times New Roman"> решетке 
+компьютеров. Выделенные данные расположены в одном 
+компьютере.</FONT></FONT></B></CENTER>
+<P><BR><BR><BR><BR>
+<P align=justify><FONT face="Times New Roman"><FONT size=+0>Каждый компьютер 
+</FONT></FONT><FONT face="Courier New"><FONT size=-1>(i,j)</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0> вычисляет произведение </FONT></FONT><FONT 
+face="Courier New"><FONT size=-1>i</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0>-й горизонтальной полосы матрицы 
+</FONT></FONT><FONT face="Courier New"><FONT size=-1>A</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0>и </FONT></FONT><FONT 
+face="Courier New"><FONT size=-1>j</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0>-й вертикальной полосы матрицы 
+</FONT></FONT><FONT face="Courier New"><FONT size=-1>B</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0>, произведение получено в подматрице 
+</FONT></FONT><FONT face="Courier New"><FONT size=-1>(i,j)</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0> матрицы </FONT></FONT><FONT 
+face="Courier New"><FONT size=-1>C</FONT></FONT><FONT size=+0>.</FONT> 
+<P align=justify><FONT face="Times New Roman"><FONT size=+0>Последовательные 
+стадии вычисления иллюстрируются на рисунке 2.4:</FONT></FONT> 
+<UL>
+  <LI><FONT face="Times New Roman"><FONT size=+0>1. Матрица </FONT></FONT><FONT 
+  face="Courier New"><FONT size=-1>А</FONT></FONT><FONT size=+0><FONT 
+  face="Times New Roman"> распределяется по горизонтальным полосам вдоль 
+  координаты</FONT> </FONT><FONT face="Courier New"><FONT 
+  size=-1>(x,0)</FONT></FONT><FONT size=+0>.</FONT> 
+  <LI><FONT face="Times New Roman"><FONT size=+0>2. Матрица </FONT></FONT><FONT 
+  face="Courier New"><FONT size=-1>B</FONT></FONT><FONT size=+0><FONT 
+  face="Times New Roman"> распределяется по вертикальным полосам вдоль 
+  координаты</FONT> </FONT><FONT face="Courier New"><FONT 
+  size=-1>(0,y)</FONT></FONT><FONT size=+0>.</FONT> 
+  <LI><FONT face="Times New Roman"><FONT size=+0>3. Полосы </FONT></FONT><FONT 
+  face="Courier New"><FONT size=-1>А</FONT></FONT><FONT 
+  face="Times New Roman"><FONT size=+0> распространяются в измерении 
+  </FONT></FONT><FONT face="Courier New"><FONT size=-1>y</FONT></FONT><FONT 
+  size=+0>.</FONT> 
+  <LI><FONT face="Times New Roman"><FONT size=+0>4. Полосы </FONT></FONT><FONT 
+  face="Courier New"><FONT size=-1>B</FONT></FONT><FONT 
+  face="Times New Roman"><FONT size=+0> распространяются в измерении 
+  </FONT></FONT><FONT face="Courier New"><FONT size=-1>х</FONT></FONT><FONT 
+  size=+0>.</FONT> 
+  <LI><FONT face="Times New Roman"><FONT size=+0>5. Каждый процесс вычисляет 
+  одну подматрицу произведения.</FONT></FONT> 
+  <LI><FONT face="Times New Roman"><FONT size=+0>7. Матрица </FONT></FONT><FONT 
+  face="Courier New"><FONT size=-1>C</FONT></FONT><FONT 
+  face="Times New Roman"><FONT size=+0> собирается из </FONT></FONT><FONT 
+  face="Courier New"><FONT size=-1>(x,y)</FONT></FONT><FONT 
+  face="Times New Roman"><FONT size=+0> плоскости.</FONT></FONT> </LI></UL>
+<P align=justify><FONT face="Times New Roman"><FONT size=+0>Осуществлять 
+пересылки между компьютерами во время вычислений не нужно, т.к. все полосы 
+матрицы </FONT></FONT><FONT face="Courier New"><FONT 
+size=-1>А</FONT></FONT><FONT face="Times New Roman"><FONT size=+0> пересекаются 
+со всеми полосами матрицы </FONT></FONT><FONT face="Courier New"><FONT 
+size=-1>B</FONT></FONT><FONT face="Times New Roman"><FONT size=+0> в памяти 
+компьютеров системы.</FONT></FONT> <BR>&nbsp; 
+<DIR>
+<CENTER><FONT face="Courier New"><FONT size=-1><B>2.scatter </B>B</FONT><FONT 
+size=-2>&nbsp;&nbsp; </FONT><FONT size=-1>координаты</FONT></FONT> <BR><IMG 
+height=126 src="2 Схемы параллельных алгоритмов решения задач.files/r2_41.jpg" 
+width=499> <BR><B><FONT face="Courier New"><FONT 
+size=-1>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+3. broadcast</FONT></FONT></B> <BR><FONT face="Courier New"><FONT 
+size=-1><B>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+подматриц </B>A</FONT></FONT> 
+<P><IMG height=123 
+src="2 Схемы параллельных алгоритмов решения задач.files/r2_42.jpg" width=404> 
+<BR><B><FONT face="Courier New"><FONT size=-1>4. 
+broadcast&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+5. вычисление</FONT></FONT></B> <BR><FONT face="Courier New"><FONT 
+size=-1><B>подматриц</B> 
+B&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+<B>произведений</B></FONT></FONT> <BR><B><FONT face="Courier New"><FONT 
+size=-2>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+</FONT><FONT size=-1>(подматриц в </FONT></FONT></B><FONT 
+face="Courier New"><FONT size=-1>C<B>)</B></FONT></FONT> 
+<P><IMG height=127 
+src="2 Схемы параллельных алгоритмов решения задач.files/r2_43.jpg" width=124> 
+<BR><B><FONT face="Courier New"><FONT size=-1>6. сбор</FONT></FONT></B> 
+<BR><FONT face="Courier New"><FONT size=-1><B>результатов в 
+</B>C</FONT></FONT></CENTER></P></DIR>
+<CENTER><B><FONT face="Times New Roman"><FONT size=+0>Pис. 2.4 
+</FONT></FONT>Стадии вычисления произведения матриц в 2<FONT size=+0>D<FONT 
+face="Times New Roman"> параллельном алгоритме</FONT></FONT></B><FONT 
+face="Times New Roman"><FONT size=+0>.</FONT></FONT></CENTER>
+<P><BR><BR><BR><BR>
+<P align=justify><FONT face="Times New Roman"><FONT size=+0>Этот алгоритм 
+эффективней предыдущего, т.</FONT></FONT><SUB><FONT size=-2> </FONT></SUB><FONT 
+face="Times New Roman"><FONT size=+0>к. непроизводительное время пересылок 
+данных осуществляется только при загрузке исходных данных в память компьютеров и 
+их выгрузке, и нет обменов <U>данными</U> в процессе вычислений. Поскольку время 
+обменов равно нулю, а время загрузки и выгрузки здесь не учитывается, то общее 
+время вычислений будет равно:</FONT></FONT> 
+<CENTER>
+<P><FONT face="Courier New"><FONT size=-1>T = 
+(U+S)/(p<SUB>1</SUB>*p<SUB>2</SUB>)</FONT></FONT></CENTER>
+<P align=justify><FONT face="Times New Roman"><FONT size=+0>И отношение времени 
+"вычислений без обменов" к общему времени вычислений есть 
+величина:</FONT></FONT> 
+<CENTER>
+<P><FONT face="Courier New"><FONT size=-1>K = (U+S)/(U+S)=1</FONT></FONT><FONT 
+size=+0>.</FONT></CENTER>
+<P align=justify><FONT size=+0><FONT face="Times New Roman">Здесь 
+значения</FONT> </FONT><FONT face="Courier New"><FONT 
+size=-1>T</FONT></FONT><FONT size=+0>, </FONT><FONT face="Courier New"><FONT 
+size=-1>K</FONT></FONT><FONT size=+0>, </FONT><FONT face="Courier New"><FONT 
+size=-1>U</FONT></FONT><FONT face="Times New Roman"><FONT size=+0> и 
+</FONT></FONT><FONT face="Courier New"><FONT size=-1>S</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0> - смотри в предыдущем 
+разделе.</FONT></FONT> 
+<P><B><FONT face=Garamond>2.2.3 Алгоритм 3</FONT></B> 
+<P align=justify><FONT size=+0><FONT face="Times New Roman">Для больших матриц, 
+время вычисления произведения может быть уменьшено применением алгоритм, который 
+осуществляет вычисление на 3-мерной</FONT> <FONT 
+face="Times New Roman">(пространственной) сетке компьютеров.</FONT></FONT> 
+<P align=justify><FONT face="Times New Roman"><FONT size=+0>В приведенном ниже 
+алгоритме осуществляется отображение основных данных объемом </FONT></FONT><FONT 
+face="Courier New"><FONT size=-1>n<SUB>1</SUB> х 
+n<SUB>2</SUB></FONT></FONT><SUB> + n2 </SUB><FONT face="Courier New"><FONT 
+size=-1>х n<SUB>3</SUB></FONT></FONT><SUB> + n1 </SUB><FONT 
+face="Courier New"><FONT size=-1>х n<SUB>3</SUB></FONT></FONT><SUB> </SUB><FONT 
+face="Times New Roman"><FONT size=+0>на объемную сетку компьютеров размером 
+</FONT></FONT><FONT face="Courier New"><FONT size=-1>p<SUB>1</SUB> х 
+p<SUB>2</SUB> х p<SUB>3</SUB></FONT></FONT><FONT face="Times New Roman"><FONT 
+size=+0>. Матрицы разрезаны, как показано на рисунке 2.5: матрица 
+</FONT></FONT><FONT face="Courier New"><FONT size=-1>А</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0> разрезана на </FONT></FONT><FONT 
+face="Courier New"><FONT size=-1>p<SUB>1</SUB> х 
+p<SUB>2</SUB></FONT></FONT><FONT face="Times New Roman"><FONT size=+0> 
+субматрицы, матрица </FONT></FONT><FONT face="Courier New"><FONT 
+size=-1>B</FONT></FONT><FONT face="Times New Roman"><FONT size=+0> разрезана на 
+</FONT></FONT><FONT face="Courier New"><FONT size=-1>p<SUB>2</SUB> х 
+p<SUB>3</SUB></FONT></FONT><FONT face="Times New Roman"><FONT size=+0> 
+субматрицы, и матрица </FONT></FONT><FONT face="Courier New"><FONT 
+size=-1>C</FONT></FONT><FONT face="Times New Roman"><FONT size=+0> разрезана на 
+</FONT></FONT><FONT face="Courier New"><FONT size=-1>p<SUB>1</SUB> х 
+p<SUB>3</SUB></FONT></FONT><FONT face="Times New Roman"><FONT size=+0> 
+субматрицы. Компьютер </FONT></FONT><FONT face="Courier New"><FONT 
+size=-1>(i,j,k)</FONT></FONT><FONT face="Times New Roman"><FONT size=+0> 
+вычисляет произведение субматрицы </FONT></FONT><FONT face="Courier New"><FONT 
+size=-1>(i,j)</FONT></FONT><FONT face="Times New Roman"><FONT size=+0> матрицы 
+</FONT></FONT><FONT face="Courier New"><FONT size=-1>А</FONT></FONT><FONT 
+size=+0><FONT face="Times New Roman"> и субматрицы</FONT> </FONT><FONT 
+face="Courier New"><FONT size=-1>(j,k)</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0> матрицы </FONT></FONT><FONT 
+face="Courier New"><FONT size=-1>B</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0>. Субматрица </FONT></FONT><FONT 
+face="Courier New"><FONT size=-1>(i,k)</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0> матрицы </FONT></FONT><FONT 
+face="Courier New"><FONT size=-1>C</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0> получается суммированием промежуточных 
+результатов, вычисленных в компьютерах </FONT></FONT><FONT 
+face="Courier New"><FONT size=-1>(i,j,k), j = 0,...,p2-1</FONT></FONT><FONT 
+size=+0>.</FONT> 
+<P align=justify><FONT face="Times New Roman"><FONT size=+0>Последовательные 
+стадии вычисления иллюстрируются на рисунке 2.6.</FONT></FONT> 
+<UL>
+  <LI><FONT face="Times New Roman"><FONT size=+0>1. Субматрицы 
+  </FONT></FONT><FONT face="Courier New"><FONT size=-1>А</FONT></FONT><FONT 
+  face="Times New Roman"><FONT size=+0> распределяются в </FONT></FONT><FONT 
+  face="Courier New"><FONT size=-1>(x,y,0)</FONT></FONT><FONT size=+0><FONT 
+  face="Times New Roman"> плоскости</FONT>.</FONT> 
+  <LI><FONT face="Times New Roman"><FONT size=+0>2. Субматрицы 
+  </FONT></FONT><FONT face="Courier New"><FONT size=-1>B</FONT></FONT><FONT 
+  face="Times New Roman"><FONT size=+0> распределяются в </FONT></FONT><FONT 
+  face="Courier New"><FONT size=-1>(0,y,z)</FONT></FONT><FONT 
+  face="Times New Roman"><FONT size=+0> плоскости.</FONT></FONT> 
+  <LI><FONT face="Times New Roman"><FONT size=+0>3. Субматрицы 
+  </FONT></FONT><FONT face="Courier New"><FONT size=-1>А</FONT></FONT><FONT 
+  face="Times New Roman"><FONT size=+0> распространяются в измерении 
+  </FONT></FONT><FONT face="Courier New"><FONT size=-1>z</FONT></FONT><FONT 
+  size=+0>.</FONT> 
+  <LI><FONT face="Times New Roman"><FONT size=+0>4. Субматрицы 
+  </FONT></FONT><FONT face="Courier New"><FONT size=-1>B</FONT></FONT><FONT 
+  face="Times New Roman"><FONT size=+0> распространяются в измерении 
+  </FONT></FONT><FONT face="Courier New"><FONT size=-1>х</FONT></FONT><FONT 
+  size=+0>.</FONT> 
+  <LI><FONT face="Times New Roman"><FONT size=+0>5. Каждый процесс вычисляет 
+  одну субматрицу.</FONT></FONT> 
+  <LI><FONT face="Times New Roman"><FONT size=+0>6. Промежуточные результаты 
+  редуцируется в измерении </FONT></FONT><FONT face="Courier New"><FONT 
+  size=-1>y</FONT></FONT><FONT size=+0>.</FONT> 
+  <LI><FONT face="Times New Roman"><FONT size=+0>7. Матрица </FONT></FONT><FONT 
+  face="Courier New"><FONT size=-1>C</FONT></FONT><FONT 
+  face="Times New Roman"><FONT size=+0> собирается из </FONT></FONT><FONT 
+  face="Courier New"><FONT size=-1>(x,0,z)</FONT></FONT><FONT 
+  face="Times New Roman"><FONT size=+0> плоскости.</FONT></FONT> </LI></UL>
+<P align=justify><FONT face="Times New Roman"><FONT size=+0>Этот алгоритм похож 
+на предыдущий, но дополнительно разрезаются еще полосы матриц, и эти разрезанные 
+полосы распределяются в третьем измерении </FONT></FONT><FONT 
+face="Courier New"><FONT size=-1>y</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0>. В данном случае в каждом компьютере будут 
+перемножаться только части векторов строк матрицы </FONT></FONT><FONT 
+face="Courier New"><FONT size=-1>А</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0> и части столбцов матрицы 
+</FONT></FONT><FONT face="Courier New"><FONT size=-1>B</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0> и в результате будет только частичная 
+сумма для каждого элемента результирующей матрицы </FONT></FONT><FONT 
+face="Courier New"><FONT size=-1>C</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0>. Операция суммирования вдоль координаты 
+</FONT></FONT><FONT face="Courier New"><FONT size=-1>y</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0> этих полученных частичных сумм для 
+результирующих элементов и завершает вычисления матрицы </FONT></FONT><FONT 
+face="Courier New"><FONT size=-1>C</FONT></FONT><FONT size=+0>.</FONT> 
+<P align=justify><FONT face="Times New Roman"><FONT size=+0>Этот алгоритм для 
+больших матриц является еще более эффективным, чем предыдущий. Соотношения для 
+общего времени вычислений в этом алгоритме будет равно:</FONT></FONT> 
+<CENTER>
+<P><FONT face="Courier New"><FONT size=-1>T = 
+(U+S)/(p<SUB>1</SUB>*p<SUB>2</SUB>*p<SUB>3</SUB>)</FONT></FONT></CENTER>
+<P align=justify><FONT face="Times New Roman"><FONT size=+0>А отношение времени 
+"вычислений без обменов" к общему времени вычислений есть 
+величина:</FONT></FONT> 
+<CENTER>
+<P><FONT face="Courier New"><FONT size=-1>K = (U+S)/(U+S)=1</FONT></FONT><FONT 
+size=+0>.</FONT></CENTER>
+<P align=justify><FONT size=+0><FONT face="Times New Roman">Здесь 
+значения</FONT> </FONT><FONT face="Courier New"><FONT 
+size=-1>T</FONT></FONT><FONT size=+0>, </FONT><FONT face="Courier New"><FONT 
+size=-1>K</FONT></FONT><FONT size=+0>, </FONT><FONT face="Courier New"><FONT 
+size=-1>U</FONT></FONT><FONT face="Times New Roman"><FONT size=+0> и 
+</FONT></FONT><FONT face="Courier New"><FONT size=-1>S</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0> - смотри в предыдущем 
+разделе.</FONT></FONT> 
+<CENTER>
+<P><IMG height=125 
+src="2 Схемы параллельных алгоритмов решения задач.files/r2_5.jpg" 
+width=348></CENTER><FONT face="Courier New"><FONT 
+size=-1>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+A&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+B&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; C</FONT></FONT> 
+<CENTER>
+<P><B><FONT face="Times New Roman"><FONT size=+0>Рис. 2.5&nbsp; 
+</FONT></FONT>Разрезание данных для параллельного алгоритма произведения двух 
+матриц при вычислении в 3<FONT size=+0>D<FONT face="Times New Roman"> решетке 
+компьютеров.</FONT></FONT></B></CENTER>
+<P><BR>
+<DIR>
+<CENTER><IMG height=210 
+src="2 Схемы параллельных алгоритмов решения задач.files/r2_61.jpg" width=494> 
+<P><FONT face="Courier New"><FONT size=-1><B>2. </B>scatter 
+B&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+<B>3. </B>broadcast</FONT></FONT> <BR><FONT face="Courier New"><FONT 
+size=-2>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+</FONT><FONT size=-1>подматриц из А</FONT></FONT> <BR>&nbsp; <BR>&nbsp; 
+<P><IMG height=200 
+src="2 Схемы параллельных алгоритмов решения задач.files/r2_62.jpg" width=542> 
+<P><FONT face="Courier New"><FONT size=-1><B>4. </B>broadcast</FONT><FONT 
+size=-2>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+</FONT><FONT size=-1><B>5. </B>Вычисление</FONT></FONT> <BR><FONT 
+face="Courier New"><FONT size=-2>&nbsp;&nbsp;&nbsp; </FONT><FONT 
+size=-1>подматриц из<B> </B>В</FONT><FONT 
+size=-2>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+</FONT><FONT size=-1>произведений</FONT></FONT> <BR><FONT 
+face="Courier New"><FONT 
+size=-2>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+</FONT><FONT size=-1>подматриц в С)</FONT></FONT> 
+<P><IMG height=184 
+src="2 Схемы параллельных алгоритмов решения задач.files/r2_63.jpg" width=463> 
+<P><FONT face="Courier New"><FONT size=-1><B>6. </B>reduce 
+произведений&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+<B>7</B></FONT><B>.</B><FONT size=-2> </FONT></FONT>gather C <BR><FONT 
+face="Courier New"><FONT size=-2>&nbsp;&nbsp; </FONT><FONT size=-1>(суммирование 
+произведений)</FONT><FONT 
+size=-2>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+</FONT><FONT size=-1>сбор результатов)</FONT></FONT></CENTER></P></DIR>
+<CENTER><B><FONT face="Times New Roman"><FONT size=+0>Рис. 2.6</FONT></FONT> 
+Стадии вычислений в 3<FONT size=+0>D<FONT face="Times New Roman"> параллельном 
+алгоритме произведения матриц.</FONT></FONT></B></CENTER>
+<P><BR><BR><BR><BR>
+<P><A name=2_3></A>
+<P><B><FONT face=Garamond><FONT size=+1>2.3 Задача Дирихле. Явная разностная 
+схема для уравнения Пуассона</FONT></FONT></B> 
+<P align=justify><FONT face="Times New Roman"><FONT size=+0>В прямоугольной 
+области </FONT></FONT><B><FONT face="Courier New"><FONT size=-1>0 &lt;= x &lt;= 
+a</FONT></FONT></B><FONT size=+0>,&nbsp; </FONT><B><FONT 
+face="Courier New"><FONT size=-1>0 &lt;= y &lt;= b</FONT></FONT></B><FONT 
+face="Times New Roman"><FONT size=+0> требуется найти решение 
+уравнения:</FONT></FONT> 
+<CENTER>
+<P><IMG height=46 
+src="2 Схемы параллельных алгоритмов решения задач.files/Image4.gif" 
+width=129></CENTER>
+<P><FONT face="Times New Roman"><FONT size=+0>при заданных значениях функции 
+</FONT></FONT><FONT face="Courier New"><FONT size=-1>u</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0> на границе.</FONT></FONT> 
+<P align=justify><FONT face="Times New Roman"><FONT size=+0>Явная разностная 
+схема решения этого уравнения имеет вид:</FONT></FONT> 
+<DIR>
+<CENTER><IMG height=26 
+src="2 Схемы параллельных алгоритмов решения задач.files/Image5.gif" 
+width=309></CENTER></DIR><FONT face="Times New Roman"><FONT 
+size=+0>где&nbsp;<IMG height=25 
+src="2 Схемы параллельных алгоритмов решения задач.files/Image6.gif" width=25 
+align=ABSCENTER border=0> и&nbsp;<IMG height=25 
+src="2 Схемы параллельных алгоритмов решения задач.files/Image7.gif" width=26 
+align=ABSCENTER> - значения функций&nbsp;<IMG height=14 
+src="2 Схемы параллельных алгоритмов решения задач.files/Image8.gif" 
+width=13>и&nbsp;<IMG height=17 
+src="2 Схемы параллельных алгоритмов решения задач.files/Image9.gif" width=14 
+align=absBottom> в точке&nbsp;<IMG height=21 
+src="2 Схемы параллельных алгоритмов решения задач.files/Image10.gif" width=37 
+align=ABSCENTER> разностной сетки.</FONT></FONT> 
+<P align=justify><FONT face="Times New Roman"><FONT size=+0>Ниже представлен 
+главный фрагмент программы итерационного решения задачи. Фрагмент 
+последовательной программы.</FONT></FONT> 
+<DIR><FONT face="Courier New"><FONT size=-1>double A[n+2][m+2], 
+B[n][m];</FONT></FONT> <BR><FONT face="Courier New"><FONT 
+size=-1>...</FONT></FONT> <BR><FONT face="Courier New"><FONT size=-1>/* Главный 
+цикл */</FONT></FONT> <BR><FONT face="Courier New"><FONT size=-1>while(! 
+converged) {</FONT></FONT> 
+<P><FONT face="Courier New"><FONT size=-1>/* выполнение схемы "крест" 
+*/</FONT></FONT> 
+<P><FONT face="Courier New"><FONT size=-1>for(j = 1; j &lt;= m; 
+j++)</FONT></FONT> <BR><FONT face="Courier New"><FONT size=-1>for(i = 1; i &lt;= 
+n; i++)</FONT></FONT> <BR><FONT face="Courier New"><FONT size=-1>B[i-1][j-1] = 
+0.25*(A[i-1][j]+A[i+1][j]+A[i][j-1]+A[i][j+1]);</FONT></FONT> 
+<P><FONT face="Courier New"><FONT size=-1>/* копирование результата обратно в 
+массив A */</FONT></FONT> 
+<P><FONT face="Courier New"><FONT size=-1>for(j = 1; j &lt;= m; 
+j++)</FONT></FONT> <BR><FONT face="Courier New"><FONT size=-1>for(i = 1; i &lt;= 
+n; i++)</FONT></FONT> <BR><FONT face="Courier New"><FONT size=-1>A[i][j] = 
+B[i-1][j-1];</FONT></FONT> <BR><FONT face="Courier New"><FONT 
+size=-1>...</FONT></FONT> <BR><FONT face="Courier New"><FONT 
+size=-1>}</FONT></FONT></P></DIR><FONT face="Times New Roman"><FONT size=+0>Этот 
+фрагмент программы описывает главный цикл итерационного процесса решения, где на 
+каждой итерации значение в окрестности точки заменяется средним значением сумм 
+значений ее четырех соседних точек на предыдущем временном шаге итерации (смотри 
+рисунок 2.7).</FONT></FONT> <BR>&nbsp; <BR>&nbsp; <BR><BR>
+<CENTER>
+<P><IMG height=131 
+src="2 Схемы параллельных алгоритмов решения задач.files/r2_7.jpg" width=466> 
+<P><B><FONT size=+0><FONT face="Times New Roman">Рис. 2.</FONT>7</FONT></B><FONT 
+face="Times New Roman"><FONT size=+0> Вычисление точки через значения точек на 
+предыдущем шаге итерации.</FONT></FONT></CENTER>
+<P><BR><BR><BR>
+<P align=justify><FONT face="Times New Roman"><FONT size=+0>Граничные значения 
+не изменяются. В массиве </FONT></FONT><FONT face="Courier New"><FONT 
+size=-1>B</FONT></FONT><FONT face="Times New Roman"><FONT size=+0> вычисляются 
+значения следующей итерации, а в массиве </FONT></FONT><FONT 
+face="Courier New"><FONT size=-1>А</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0> находятся значения предыдущей итерации. 
+Здесь приведен внутренний цикл, где выполнено большинство вычислений. В первой и 
+последней строке, а так же, в первом и последнем столбце двумерного массива 
+</FONT></FONT><FONT face="Courier New"><FONT size=-1>А</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0> записаны граничные значения.</FONT></FONT> 
+
+<P align=justify><FONT face="Times New Roman"><FONT size=+0>Алгоритм этой задачи 
+имеет простую структуру, идентичную для всех точек пространства вычисления, 
+поэтому здесь при построении параллельной программы целесообразно использовать 
+<I>метод распараллеливания по данным</I>. Массивы "разрезаются" на части, затем 
+в каждый процессор загружается программа, аналогичная последовательной 
+программе, но с модифицированными значениями индексов циклов и соответствующая 
+часть массива данных. Т.е. каждый процессор обрабатывает только часть данных. 
+Части данных соответственно упорядочены.</FONT></FONT> 
+<P align=justify><FONT face="Times New Roman"><FONT size=+0>Способы разрезания 
+данных могут быть разные, и в зависимости от способа разрезания данных будут и 
+разные схемы взаимодействий между параллельными процессами. Распределение данных 
+по процессорам должно быть сбалансировано. Связь между процессорами должна быть 
+минимизирована.</FONT></FONT> 
+<P align=justify><FONT face="Times New Roman"><FONT size=+0>Двумерный массив 
+может быть разрезан на части как в одном измерении, так и в двух измерениях. 
+Рисунок 2.8 поясняет эти способы разрезания данных: 1D разрезание, где матрица 
+разрезана в одном измерении полосами, и 2D разрезание, где матрица разрезана в 
+двух измерениях.</FONT></FONT> <BR>&nbsp; <BR>&nbsp; <BR><BR>
+<CENTER>
+<P><IMG height=131 
+src="2 Схемы параллельных алгоритмов решения задач.files/r21_8.jpg" width=402> 
+<P><B><FONT size=-1>1D <FONT 
+face="Times New Roman">разрезание</FONT></FONT><FONT 
+size=+0>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+</FONT><FONT face="Times New Roman"><FONT size=-1>2D 
+разрезание</FONT></FONT></B> 
+<P><B><FONT face="Times New Roman"><FONT size=+0>Рис. 2.8</FONT></FONT> Два 
+разных способа разрезания двумерного массива на блоки.</B></CENTER>
+<P><BR><BR><BR>
+<P align=justify><FONT face="Times New Roman"><FONT size=+0>На рисунке матрица 
+разрезана на четыре блока; каждый блок обрабатывается в отдельном процессоре. 
+Так как связь между процессорами осуществляется границами блоков, то объем связи 
+минимизирован в 2D разрезании, которое имеет меньший периметр области связи. В 
+этом разбиении каждый процессор взаимодействует, в общем случае, с четырьмя 
+соседями, быстрее, чем два соседа в 1D разрезании. Когда отношение 
+</FONT></FONT><FONT face="Courier New"><FONT size=-1>n/P</FONT></FONT><FONT 
+size=+0> (</FONT><FONT face="Courier New"><FONT size=-1>P</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0> число процессоров) маленькое, время связи 
+будет зависеть от внешних коммуникаций, и первое разбиение будет лучше по 
+взаимодействиям. Когда это отношение большое, второе разбиение лучше по 
+взаимодействиям. Здесь используется первое разбиение.</FONT></FONT> 
+<P align=justify><FONT face="Times New Roman"><FONT size=+0>Значение каждой 
+точки в массиве </FONT></FONT><FONT face="Courier New"><FONT 
+size=-1>B</FONT></FONT><FONT face="Times New Roman"><FONT size=+0> вычисляется 
+через значения четырех ее соседей в массиве </FONT></FONT><FONT 
+face="Courier New"><FONT size=-1>A</FONT></FONT><FONT size=+0><FONT 
+face="Times New Roman">. Связь между процессорами необходима границами блоков, 
+чтобы вычислять граничные точки блоков через свои соседние точки, которые 
+принадлежат другому процессору. Так как точки вычисляются через только свои 
+соседние точки, вычисленные на предыдущей итерации, то для вычисления граничных 
+точек блока необходимо присутствие копии соответствующего</FONT> <FONT 
+face="Times New Roman">столбца предыдущей итерации соседнего блока, находящегося 
+в соседнем компьютере. Следовательно, при 1D разрезании необходимо распределение 
+блоков массива </FONT></FONT><FONT face="Courier New"><FONT 
+size=-1>A</FONT></FONT><FONT face="Times New Roman"><FONT size=+0> по 
+компьютерам с перекрытием в один столбец. Таких перекрытий столбцами для массива 
+</FONT></FONT><FONT face="Courier New"><FONT size=-1>B</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0> не нужно; - это следует из алгоритма. На 
+рисунке 2.9 иллюстрируется перекрытие соседних полос в один столбец. На этом 
+рисунке римскими цифрами обозначены крайние столбцы соседних полос. Пунктирной 
+линией обозначена граница разреза массива данных.</FONT></FONT> 
+<P align=justify><FONT size=+0><FONT face="Times New Roman">Алгоритм и схема 
+обменов данными аналогичны и при 2D разрезании массивов. В этом случае обмен 
+данными будет осуществляться с четырьмя соседними компьютерами. Подобно этой 
+задаче аналогичным методом распараллеливания по данным решаются итерационные 
+задачи размерности больше трех</FONT>.</FONT> <BR>&nbsp; <BR>&nbsp; <BR><BR>
+<CENTER>
+<P><IMG height=166 
+src="2 Схемы параллельных алгоритмов решения задач.files/r2_9.jpg" width=256> 
+<P><FONT face="Courier New"><FONT size=-1>начальный 
+разрез&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; перекрытие 
+полос</FONT></FONT> <BR><FONT face="Courier New"><FONT size=-1>массива 
+данных&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; в один 
+столбец</FONT></FONT> 
+<P><B><FONT face="Times New Roman"><FONT size=+0>Рис. 2.9</FONT></FONT> 
+Перекрытие двух полос в один столбец.</B></CENTER>
+<P><BR><BR><BR>
+<P align=justify><FONT face="Times New Roman"><FONT size=+0>На рисунке 2.10 
+показаны дополнительные столбцы массива </FONT></FONT><FONT 
+face="Courier New"><FONT size=-1>A</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0> и то, как данные пересылаются после каждой 
+итерации.</FONT></FONT> <BR>&nbsp; 
+<P><FONT face="Times New Roman"><FONT 
+size=-1>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+Процесс 
+0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+Процесс 
+1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+Процесс 2</FONT></FONT> 
+<CENTER><IMG height=288 
+src="2 Схемы параллельных алгоритмов решения задач.files/r2_10.jpg" 
+width=542></CENTER>
+<P><B><FONT face="Times New Roman"><FONT size=+0>Рис. 2.10</FONT></FONT> 
+Перекрытие 1D блоков в массиве A и пересылка столбцов в конце каждой 
+итерации.</B> <BR>&nbsp; <BR>&nbsp; 
+<P align=justify><FONT size=+0><FONT face="Times New Roman">Перекрытие одним 
+столбцом обычно используется для разностной схемы, представляемой пяти-точечным 
+шаблоном сетки и использующей матрицу окрестности размером 3</FONT>x3<FONT 
+face="Times New Roman">. При использовании матрицы большей размерности, например 
+5</FONT>x5<FONT face="Times New Roman">, необходимо делать 2-х столбцовое 
+перекрытие полос массивов, находящихся в смежных компьютерах. В общем случае, 
+если рассматривается окрестность с диаметром в </FONT></FONT><FONT 
+face="Courier New"><FONT size=-1>k</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0> точек от вычисляемой точки на предыдущем 
+шаге вычислений, то перекрытие массивов нужно делать в </FONT></FONT><FONT 
+face="Courier New"><FONT size=-1>k</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0> столбцов.</FONT></FONT> 
+<P align=justify><FONT size=+0><FONT face="Times New Roman">Фрагменты программ, 
+рассмотренного здесь параллельного алгоритма, приведены в главе 9. Выше 
+приведена общая схема параллельного алгоритма решения задачи. При реализации 
+этой схемы могут использоваться разные языковые средства </FONT>MPI, <FONT 
+face="Times New Roman">приспосабливающие программу к вычислительной системе. В 
+главе 9 приведено несколько разных фрагментов программ решения рассмотренной 
+задачи, демонстрирующих возможности конструкций MPI. В частности возможность 
+совмещения пересылок данных с вычислениями. При этом способе, вначале 
+вычисляются в каждом процессоре граничные точки массивов, после чего запускается 
+процесс передачи этих граничных точек соседним компьютерам и, затем, 
+продолжается вычисление внутренних точек массивов. При этом передача данных и 
+вычисления будут частично перекрываться</FONT> <FONT face="Times New Roman">во 
+времени.</FONT></FONT> 
+<P align=justify><FONT face="Times New Roman"><FONT size=+0>Эффективность этого 
+алгоритма зависит от соотношения количества обрабатываемых точек в каждом 
+компьютере к количеству передаваемых компьютером граничных точек соседним 
+компьютерам. Эффективность конечно же зависит и от самого алгоритма, например, 
+вычисления организуются с перекрытием обменов <U>данными</U> или без перекрытия. 
+Практика показывает, что подобные задачи решаются параллельными методами очень 
+эффективно, т.е. временные затраты на обмен <U>данными</U> в процентном 
+соотношении ко всему времени решения очень не значительны.</FONT></FONT><A 
+name=2_4></A> 
+<P><B><FONT face=Garamond><FONT size=+1>2.4&nbsp; Параллельные алгоритмы решения 
+систем линейных алгебраических</FONT></FONT></B> <BR><B><FONT 
+face=Garamond><FONT size=+1>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; уравнений 
+методом Гаусса</FONT></FONT></B> 
+<P align=justify><FONT face="Times New Roman"><FONT size=+0>Требуется найти 
+решение системы линейных алгебраических уравнений:</FONT></FONT> 
+<DIR>
+<CENTER><FONT face="Courier New"><FONT size=-1>a<SUB>11</SUB>x<SUB>1</SUB> + 
+a<SUB>12</SUB>x<SUB>2</SUB> + ... + a<SUB>1n</SUB>x<SUB>n</SUB> = 
+f<SUB>1</SUB></FONT></FONT> <BR><FONT face="Courier New"><FONT 
+size=-1>a<SUB>21</SUB>x<SUB>2</SUB> + a<SUB>22</SUB>x<SUB>2</SUB> + ... + 
+a<SUB>2n</SUB>x<SUB>n</SUB> = f<SUB>2</SUB></FONT></FONT> <BR><FONT 
+face="Courier New"><FONT size=-1>. . . . . . . . . . . . . .</FONT></FONT> 
+<BR><FONT face="Courier New"><FONT size=-1>a<SUB>n1</SUB>x<SUB>1</SUB> + 
+a<SUB>n2</SUB>x<SUB>2</SUB> + ... + a<SUB>nn</SUB>x<SUB>n</SUB> = 
+f<SUB>n</SUB></FONT></FONT></CENTER></DIR><FONT face="Times New Roman"><FONT 
+size=+0>Метод Гаусса основан на последовательном исключении 
+неизвестных.</FONT></FONT> 
+<P align=justify><FONT face="Times New Roman"><FONT size=+0>Здесь 
+рассматриваются два алгоритма решения СЛАУ методом Гаусса. Они связаны с разными 
+способами представления <U>данных</U> (матрицы коэффициентов и правых частей) в 
+распределенной памяти мультикомпьютера.</FONT></FONT> 
+<P><B><FONT face=Garamond>2.4.1&nbsp; Первый алгоритм решения СЛАУ методом 
+Гаусса</FONT></B> 
+<P align=justify><FONT face="Times New Roman"><FONT size=+0>В алгоритме, 
+представленном в данной секции, исходная матрица коэффициентов 
+</FONT></FONT><FONT face="Courier New"><FONT size=-1>A</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0> и вектор правых частей </FONT></FONT><FONT 
+face="Courier New"><FONT size=-1>F</FONT></FONT><FONT size=+0><FONT 
+face="Times New Roman"> разрезаны горизонтальными полосами, как показано на 
+рисунке 2.9. Каждая полоса загружается в соответствующий компьютер: нулевая 
+полоса - в нулевой компьютер, первая полоса - в первый компьютер, и т. д., 
+последняя полоса -</FONT> <FONT face="Times New Roman">в </FONT></FONT><FONT 
+face="Courier New"><FONT size=-1>p1</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0> компьютер.</FONT></FONT> 
+<CENTER>
+<P><IMG height=105 
+src="2 Схемы параллельных алгоритмов решения задач.files/r21_11.jpg" width=183> 
+<BR><FONT face="Courier New"><FONT size=-1>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+A&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; F</FONT></FONT> 
+<P><B><FONT size=+0><FONT face="Times New Roman">Рис. 2.11</FONT> 
+</FONT></B><FONT face="Times New Roman"><FONT size=+0>Разрезание <U>данных</U> 
+для параллельного алгоритма 1 решения СЛАУ методом 
+Гаусса.</FONT></FONT></CENTER>
+<P align=justify><FONT face="Times New Roman"><FONT size=+0>При прямом ходе 
+матрица приводится к треугольному виду последовательно по компьютерам. Вначале к 
+треугольному виду приводятся строки в нулевом компьютере, при этом нулевой 
+компьютер последовательно, строка за строкой, передает свои сроки остальным 
+компьютерам, начиная с первого. Затем к треугольному виду приводятся строки в 
+первом компьютере, передавая свои строки остальным компьютерам, начиная со 
+второго, т.е. компьютерам с большими номерами, и т. д. Процесс деления строк на 
+коэффициенты при </FONT></FONT><FONT face="Courier New"><FONT 
+size=-1>x<SUB>i</SUB></FONT></FONT><FONT face="Times New Roman"><FONT size=+0> 
+не требует информации от других компьютеров.</FONT></FONT> <BR><FONT 
+face="Times New Roman"><FONT size=+0>После прямого хода полосы матрицы 
+</FONT></FONT><FONT face="Courier New"><FONT size=-1>A</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0> в каждом узле будут иметь 
+вид:</FONT></FONT> 
+<CENTER>
+<P><IMG height=160 
+src="2 Схемы параллельных алгоритмов решения задач.files/Image11.gif" width=438> 
+
+<P><B><FONT face="Times New Roman"><FONT size=+0>Рис. 2.12&nbsp; 
+</FONT></FONT>Вид полос после прямого хода в алгоритме 1 решения СЛАУ методом 
+Гаусса.</B></CENTER>
+<P><BR><BR><BR>
+<P align=justify><FONT size=+0><FONT face="Times New Roman">Пример приведен для 
+четырех узлов; </FONT>$ -<FONT face="Times New Roman"> вещественные 
+числа.</FONT></FONT> 
+<P align=justify><FONT face="Times New Roman"><FONT size=+0>Аналогично, 
+последовательно по компьютерам, начиная с последнего по номеру компьютера, 
+осуществляется обратный ход.</FONT></FONT> 
+<P align=justify><FONT face="Times New Roman"><FONT size=+0>Особенностью этого 
+алгоритма является то, что как при прямом, так и при обратном ходе, компьютеры, 
+завершившие свою часть работы, переходят в состояние ожидания, пока не завершат 
+эту работу другие компьютеры. Таким образом, вычислительная нагрузка 
+распределяется по компьютерам неравномерно, не смотря на то, что <U>данные</U> 
+изначально распределяются по компьютерам приблизительно одинаково. Простои 
+компьютеров значительно уменьшаются при распределении матрицы циклическими 
+горизонтальными полосами. Этот метод представлен в следующей 
+секции.</FONT></FONT> 
+<P><B><FONT face=Garamond>2.4.2 Второй алгоритм решения СЛАУ методом 
+Гаусса</FONT></B> 
+<P align=justify><FONT face="Times New Roman"><FONT size=+0>В алгоритме, 
+представленном в данном пункте, исходная матрица коэффициентов распределяется по 
+компьютерам циклическими горизонтальными полосами с шириной полосы в одну 
+строку, как показано ниже на рисунке 2.11.</FONT></FONT> <BR>&nbsp; <BR>&nbsp; 
+<BR><BR>
+<CENTER>
+<P><IMG height=139 
+src="2 Схемы параллельных алгоритмов решения задач.files/r21_13.jpg" width=242> 
+<BR><FONT face="Courier New"><FONT 
+size=-1>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+A&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+F</FONT></FONT> 
+<P><B><FONT face="Times New Roman"><FONT size=+0>Рис. 2.13&nbsp; 
+</FONT></FONT>Разрезание <U>данных</U> для параллельного алгоритма 2 решения 
+СЛАУ методом Гаусса.</B></CENTER>
+<P><BR><BR><BR>
+<P align=justify><FONT size=+0><FONT face="Times New Roman">Первая строка 
+матрицы помещается в компьютер 0, вторая строка - в компьютер 1, и т.</FONT> 
+<FONT face="Times New Roman">д., </FONT></FONT><FONT face="Courier New"><FONT 
+size=-1>p1-1</FONT></FONT><FONT size=+0>-<FONT face="Times New Roman">я строка в 
+узел </FONT></FONT><FONT face="Courier New"><FONT size=-1>p1</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0>(где </FONT></FONT><FONT 
+face="Courier New"><FONT size=-1>p1</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0> количество узлов в системе). Затем, 
+</FONT></FONT><FONT face="Courier New"><FONT size=-1>p1</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0>-я строка, снова помещается в узел 0, 
+</FONT></FONT><FONT face="Courier New"><FONT size=-1>p1+1</FONT></FONT><FONT 
+size=+0>-<FONT face="Times New Roman">я строка - в узел 1, и т. д.</FONT></FONT> 
+
+<P align=justify><FONT size=+0><FONT face="Times New Roman">При таком 
+распределении данных, соответствующим этому распределению должен быть и 
+алгоритм. Строку, которая вычитается из всех остальных строк (после 
+предварительного деления на нужные коэффициенты), назовем текущей строкой. 
+Алгоритм прямого хода заключается в следующем. Сначала текущей строкой является 
+строка с индексом 0 в компьютере 0, затем строка с индексом 0 в компьютере 1 
+(здесь не нужно путать общую нумерацию строк во всей матрице и индексацию строк 
+в каждом компьютере; в каждом компьютере индексация строк в массиве начинается с 
+нуля) и т. д., и наконец, строка с индексом 0 в последнем по номеру компьютере. 
+После чего цикл по компьютерам повторяется и текущей строкой становится строка с 
+индексом 1 в компьютере 0, затем строка с индексом 1 в компьютере 1 и т. д. 
+После прямого хода полосы матрицы в каждом компьютере будут иметь вид, 
+показанный на рисунке 2.12. Пример приведен для четырех узлов; </FONT>$ -<FONT 
+face="Times New Roman"> вещественные числа.</FONT></FONT> 
+<P align=justify><FONT face="Times New Roman"><FONT size=+0>Аналогично, 
+последовательно по узлам, начиная с последнего по номеру компьютера, 
+осуществляется обратный ход.</FONT></FONT> 
+<P align=justify><FONT size=+0><FONT face="Times New Roman">Особенностью этого 
+алгоритма является то, что как при прямом, так и при обратном ходе компьютеры 
+являются более равномерно загруженными, чем в первом методе. Значит, и 
+вычислительная нагрузка распределяется по компьютерам более равномерно, чем в 
+первом методе. Например, нулевой компьютер, завершив обработку своих строк при 
+прямом ходе, ожидает, пока другие компьютеры</FONT> <FONT 
+face="Times New Roman">обработают только по одной, оставшейся у них не 
+обработанной строке, а не полностью обработают полосы, как в первом 
+алгоритме.</FONT></FONT> 
+<CENTER>
+<P><IMG height=160 
+src="2 Схемы параллельных алгоритмов решения задач.files/Image12.gif" width=415> 
+
+<P><B><FONT face="Times New Roman"><FONT size=+0>Рис. 2.14&nbsp; 
+</FONT></FONT>Вид полос после прямого хода в алгоритме 2 решения СЛАУ методом 
+Гаусса.</B></CENTER>
+<P><BR><BR><BR>
+<P align=justify><FONT size=+0><FONT face="Times New Roman">Сравним второй 
+алгоритм с первым. При более равномерной загрузке компьютеров при вычислении 
+одного алгоритма по сравнению с другим алгоритмом следует предположить и большую 
+эффективность алгоритма с более равномерной загрузкой компьютеров. Загрузка 
+компьютеров во втором алгоритме является более равномерной. Но большая его 
+эффективность, по сравнению с первым, может проявиться только на исходных 
+матрицах большого размера (например, начиная с исходных матриц 400 х 400 и 
+более, но это зависит от конкретной системы). Это обстоятельство связано с 
+тем,</FONT> <FONT face="Times New Roman">что в первом методе в процессе 
+вычислений активных компьютеров становится все меньше, а значит, и уменьшается 
+количество пересылок своих строк другим компьютерам. С уменьшением числа 
+активных компьютеров будет уменьшаться и общее время, затрачиваемое на пересылку 
+строк в активные компьютеры. И это частично компенсирует неравномерность 
+вычислительной загрузки компьютеров. Во втором методе компьютеры активны в 
+течение всего времени вычислений и пересылка строк осуществляется всегда во все 
+компьютеры. Затраты</FONT> <FONT face="Times New Roman">на пересылку одной 
+строки из разных компьютеров, в этом случае, будут всегда 
+максимальны.</FONT></FONT><A name=2_5></A> 
+<P><B><FONT face=Garamond><FONT size=+1>2.5 Параллельный алгоритм решения СЛАУ 
+методом простой итерации</FONT></FONT></B> 
+<P align=justify><FONT face="Times New Roman"><FONT size=+0>Здесь 
+рассматривается параллельный алгоритм решения СЛАУ методом простой итерации. 
+Приближенные решения (итерации) системы линейных уравнений последовательно 
+находятся по формуле:</FONT></FONT> 
+<CENTER>
+<P><IMG height=48 
+src="2 Схемы параллельных алгоритмов решения задач.files/Image13.gif" 
+width=365></CENTER>
+<P align=justify><FONT face="Times New Roman"><FONT size=+0>Для решения этой 
+задачи на параллельной системе исходную матрицу коэффициентов 
+</FONT></FONT><FONT face="Courier New"><FONT size=-1>А</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0> разрезаем на </FONT></FONT><FONT 
+face="Courier New"><FONT size=-1>p1</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0> горизонтальных полосы по строкам, где 
+</FONT></FONT><FONT face="Courier New"><FONT size=-1>p1</FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0> - количество компьютеров в системе. 
+Аналогично, горизонтальными полосами разрезаются вектор </FONT></FONT><FONT 
+face="Courier New"><FONT size=-1>b</FONT></FONT><FONT size=+0>(<FONT 
+face="Times New Roman">правая часть) и вектора </FONT></FONT><FONT 
+face="Courier New"><FONT size=-1>y<SUB>0</SUB></FONT></FONT><FONT size=+0> 
+(<FONT face="Times New Roman">начальное приближение), </FONT></FONT><FONT 
+face="Courier New"><FONT size=-1>y<SUB>k</SUB></FONT></FONT><FONT 
+face="Times New Roman"><FONT size=+0>(текущее приближение) и </FONT></FONT><FONT 
+face="Courier New"><FONT size=-1>y<SUB>k+1</SUB></FONT></FONT><FONT size=+0> 
+(<FONT face="Times New Roman">следующее приближение). Полосы последовательно 
+распределяются по соответствующим компьютерам системы, как и в описанном выше, 
+первом алгоритме умножения матрицы на матрицу.</FONT></FONT> 
+<P align=justify><FONT face="Times New Roman"><FONT size=+0>Здесь выражение есть 
+умножение матрицы на вектор, параллельный алгоритм которого представлен в секции 
+9.2.1</FONT></FONT><FONT size=+1>.</FONT><FONT face="Times New Roman"><FONT 
+size=+0> Таким образом, этот алгоритм является составной частью, описываемого в 
+данном пункте алгоритма. В каждом компьютере системы вычисляется "свое" 
+подмножество корней. Поэтому после нахождения приближенных значений корней на 
+очередном шаге итерации в каждом компьютере проверяется выполнение следующего 
+условия для "своих" подмножеств корней:</FONT></FONT> 
+<CENTER>
+<P><IMG height=34 
+src="2 Схемы параллельных алгоритмов решения задач.files/Image14.gif" 
+width=257></CENTER>
+<P align=justify><FONT face="Times New Roman"><FONT size=+0>Это условие в 
+некоторых компьютерах системы, в текущий момент, может выполняться, а в 
+некоторых нет. Но условием завершения работы каждого компьютера является 
+безусловное выполнение условия (2) во всех компьютерах. Таким образом, прежде 
+чем завершить работу, при выполнении условия (2), каждый компьютер должен 
+предварительно узнать: во всех ли компьютерах выполнилось условие (2)? И если 
+условие (2) не выполнилось хотя бы в одном компьютере, то все компьютеры должны 
+продолжить работу. Это обстоятельство связано с тем, что в операции умножения 
+матрицы на вектор участвуют все компьютеры, взаимодействуя друг с другом. И 
+цепочку этих взаимодействий прерывать нельзя, если хотя бы в одном из 
+компьютеров не выполнится условие (2). При не выполнении условия 2, каждый 
+процесс передает всем остальным процессам полученную итерацию своих корней. И 
+тем самым вектор </FONT></FONT><FONT face="Courier New"><FONT 
+size=-1>y</FONT></FONT><FONT face="Times New Roman"><FONT size=+0> полностью 
+восстанавливается в каждом процессе для выполнения операции его умножения на 
+матрицу коэффициентов на следующем шаге итерации.</FONT></FONT> <BR>&nbsp; 
+<BR>&nbsp; </P></BODY></HTML>

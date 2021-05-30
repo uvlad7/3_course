@@ -1,0 +1,2 @@
+D:\3 course\Parallel\week_9_cpp11\parallel_accumulate\Debug\parallel_accumulate.exe
+D:\3 course\Parallel\week_9_cpp11\parallel_accumulate\Debug\parallel_accumulate.pdb

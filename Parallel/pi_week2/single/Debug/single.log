@@ -1,0 +1,3 @@
+﻿  single.cpp
+D:\3 course\Parallel\pi_week2\single\single.cpp(9,9): warning C4101: 'start': unreferenced local variable
+  single.vcxproj -> D:\3 course\Parallel\pi_week2\single\Debug\single.exe

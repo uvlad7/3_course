@@ -1,0 +1,30 @@
+[
+  {
+    "type": "Seller",
+    "data": {
+      "surname": "Ivanov",
+      "organization": "GUM",
+      "coefficient": 13.0,
+      "revenue": 12.0
+    }
+  },
+  {
+    "type": "Seller",
+    "data": {
+      "surname": "Petrov",
+      "organization": "GUM",
+      "coefficient": 14.0,
+      "revenue": 10.0
+    }
+  }
+,
+  {
+    "type": "Seller",
+    "data": {
+      "surname": "Sidorov",
+      "organization": "GUM",
+      "coefficient": 17.0,
+      "revenue": 11.0
+    }
+  }
+]

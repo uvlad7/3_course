@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import org.controlsfx.control.PrefixSelectionComboBox?>
+<?import org.controlsfx.control.ToggleSwitch?>
+<?import java.lang.String?>
+<Dialog xmlns="http://javafx.com/javafx"
+        xmlns:fx="http://javafx.com/fxml"
+        fx:controller="Settings" fx:id="dialog"
+        title="%settingsTitle">
+    <dialogPane>
+        <DialogPane>
+            <stylesheets>
+                <String fx:value="style.css"/>
+            </stylesheets>
+            <content>
+                <GridPane hgap="10" vgap="10">
+                    <padding>
+                        <Insets top="20" right="10" bottom="10" left="10"/>
+                    </padding>
+                    <Label text="%language" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                    <PrefixSelectionComboBox fx:id="language" GridPane.columnIndex="1"
+                                             GridPane.rowIndex="0"/>
+                    <Label text="%darkMode" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                    <ToggleSwitch fx:id="darkMode" selected="false" GridPane.columnIndex="1"
+                                  GridPane.rowIndex="1"/>
+                </GridPane>
+            </content>
+            <ButtonType text="%okAction" buttonData="OK_DONE"/>
+            <ButtonType text="%cancelAction" buttonData="CANCEL_CLOSE"/>
+        </DialogPane>
+    </dialogPane>
+</Dialog>

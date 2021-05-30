@@ -1,0 +1,2 @@
+D:\3 course\Parallel\week_9_cpp11\pi_oop\Debug\pi_oop.exe
+D:\3 course\Parallel\week_9_cpp11\pi_oop\Debug\pi_oop.pdb

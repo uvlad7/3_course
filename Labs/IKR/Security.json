@@ -1,0 +1,20 @@
+[
+  {
+    "type": "Security",
+    "data": {
+      "surname": "Ivanov",
+      "organization": "BSU",
+      "coefficient": 13.0,
+      "square": 12.0
+    }
+  },
+  {
+    "type": "Security",
+    "data": {
+      "surname": "Petrov",
+      "organization": "BSU",
+      "coefficient": 14.0,
+      "square": 10.0
+    }
+  }
+]

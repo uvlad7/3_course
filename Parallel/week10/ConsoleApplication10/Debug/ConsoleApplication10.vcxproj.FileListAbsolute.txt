@@ -1,0 +1,2 @@
+D:\3 course\Parallel\10\ConsoleApplication10\Debug\ConsoleApplication10.exe
+D:\3 course\Parallel\10\ConsoleApplication10\Debug\ConsoleApplication10.pdb

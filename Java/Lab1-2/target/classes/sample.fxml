@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<?import java.lang.Integer?>
+<?import java.lang.String?>
+<?import com.sun.javafx.scene.control.skin.ContextMenuContent.ArrowMenuItem?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="sample.controllers.Controller"
+      prefHeight="600.0" prefWidth="900.0">
+    <MenuBar fx:id="menu">
+        <Menu text="Vocabularies" fx:id="vocabularies"/>
+        <Menu text="Editor">
+            <MenuItem text="Add Vocabulary" onAction="#addVocabulary"/>
+            <MenuItem text="Add Record" onAction="#addRecord"/>
+            <MenuItem text="Add Word" onAction="#addWord"/>
+            <SeparatorMenuItem/>
+            <MenuItem text="Edit Vocabulary" onAction="#editVocabulary"/>
+            <MenuItem text="Edit Record" onAction="#editRecord"/>
+            <MenuItem text="Edit Word" onAction="#editWord"/>
+            <SeparatorMenuItem/>
+            <MenuItem text="Delete Record" onAction="#deleteRecord"/>
+            <MenuItem text="Delete Word" onAction="#deleteWord"/>
+            <MenuItem text="Delete Vocabulary" onAction="#deleteVocabulary"/>
+        </Menu>
+        <Menu text="Database">
+            <MenuItem text="Find Word" onAction="#findWord"/>
+            <MenuItem text="Refresh" onAction="#refresh"/>
+        </Menu>
+        <Menu visible="false" fx:id="indicator"><graphic><ImageView><Image url="point.png"/></ImageView></graphic></Menu>
+    </MenuBar>
+    <AnchorPane>
+        <ListView fx:id="view" AnchorPane.leftAnchor="0" AnchorPane.bottomAnchor="0"
+                  AnchorPane.rightAnchor="0"
+                  AnchorPane.topAnchor="0" editable="true">
+            <style>
+                <String fx:value="-fx-font-size:30.0;"/>
+            </style>
+            <placeholder>
+                <Label text="Nothing Selected">
+                    <font>
+                        <Font size="30"/>
+                    </font>
+                </Label>
+            </placeholder>
+            <prefHeight>
+                <Integer fx:constant="MAX_VALUE"/>
+            </prefHeight>
+            <prefWidth>
+                <Integer fx:constant="MAX_VALUE"/>
+            </prefWidth>
+        </ListView>
+    </AnchorPane>
+</VBox>

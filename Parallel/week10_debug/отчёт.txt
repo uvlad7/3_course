@@ -1,0 +1,134 @@
+"C:\Program Files\Java\jdk1.8.0_201\bin\java.exe" "-javaagent:C:\Program Files\JetBrains\IntelliJ IDEA 2019.2.4\lib\idea_rt.jar=5643:C:\Program Files\JetBrains\IntelliJ IDEA 2019.2.4\bin" -Dfile.encoding=UTF-8 -classpath "C:\Program Files\Java\jdk1.8.0_201\jre\lib\charsets.jar;C:\Program Files\Java\jdk1.8.0_201\jre\lib\deploy.jar;C:\Program Files\Java\jdk1.8.0_201\jre\lib\ext\access-bridge-64.jar;C:\Program Files\Java\jdk1.8.0_201\jre\lib\ext\cldrdata.jar;C:\Program Files\Java\jdk1.8.0_201\jre\lib\ext\dnsns.jar;C:\Program Files\Java\jdk1.8.0_201\jre\lib\ext\j3dcore.jar;C:\Program Files\Java\jdk1.8.0_201\jre\lib\ext\j3dutils.jar;C:\Program Files\Java\jdk1.8.0_201\jre\lib\ext\jaccess.jar;C:\Program Files\Java\jdk1.8.0_201\jre\lib\ext\jfxrt.jar;C:\Program Files\Java\jdk1.8.0_201\jre\lib\ext\localedata.jar;C:\Program Files\Java\jdk1.8.0_201\jre\lib\ext\nashorn.jar;C:\Program Files\Java\jdk1.8.0_201\jre\lib\ext\sunec.jar;C:\Program Files\Java\jdk1.8.0_201\jre\lib\ext\sunjce_provider.jar;C:\Program Files\Java\jdk1.8.0_201\jre\lib\ext\sunmscapi.jar;C:\Program Files\Java\jdk1.8.0_201\jre\lib\ext\sunpkcs11.jar;C:\Program Files\Java\jdk1.8.0_201\jre\lib\ext\vecmath.jar;C:\Program Files\Java\jdk1.8.0_201\jre\lib\ext\zipfs.jar;C:\Program Files\Java\jdk1.8.0_201\jre\lib\javaws.jar;C:\Program Files\Java\jdk1.8.0_201\jre\lib\jce.jar;C:\Program Files\Java\jdk1.8.0_201\jre\lib\jfr.jar;C:\Program Files\Java\jdk1.8.0_201\jre\lib\jfxswt.jar;C:\Program Files\Java\jdk1.8.0_201\jre\lib\jsse.jar;C:\Program Files\Java\jdk1.8.0_201\jre\lib\management-agent.jar;C:\Program Files\Java\jdk1.8.0_201\jre\lib\plugin.jar;C:\Program Files\Java\jdk1.8.0_201\jre\lib\resources.jar;C:\Program Files\Java\jdk1.8.0_201\jre\lib\rt.jar;D:\3 course\Parallel\week10_debug\CarPark\out\production\CarPark" Main 10 15
+Car №7 arrived
+Car №7 at place №1.
+Car №4 arrived
+Car №4 at place №2.
+Car №10 arrived
+Car №10 at place №3.
+Car №6 arrived
+Car №6 at place №4.
+Car №9 arrived
+Car №9 at place №5.
+Car №3 arrived
+Car №3 at place №6.
+Car №8 arrived
+Car №8 at place №7.
+Car №6 ready to departure
+Car №6 departured from place №4.
+Car №9 ready to departure
+Car №9 departured from place №5.
+Car №1 arrived
+Car №1 at place №4.
+Car №5 arrived
+Car №5 at place №5.
+Car №2 arrived
+Car №2 at place №8.
+Car №8 ready to departure
+Car №8 departured from place №7.
+Car №7 ready to departure
+Car №7 departured from place №1.
+Car №1 ready to departure
+Car №1 departured from place №4.
+Car №4 ready to departure
+Car №4 departured from place №2.
+Car №2 ready to departure
+Car №2 departured from place №8.
+Car №10 ready to departure
+Car №10 departured from place №3.
+Car №3 ready to departure
+Car №3 departured from place №6.
+Car №5 ready to departure
+Car №5 departured from place №5.
+
+Process finished with exit code 0
+
+
+
+I = 0.3102725090868819
+Time = 114
+I = 0.3102687224588750
+Time = 1248
+I = 0.3102683437269863
+Time = 10360
+I = 0.3102683065287309
+Time = 87864
+
+I = 0.3102767164695519
+Time = 120
+I = 0.3102691431910004
+Time = 602
+I = 0.3102683858840011
+Time = 5826
+I = 0.3102683099264785
+Time = 58430
+
+I = 0.3102851312872690
+Time = 74
+I = 0.3102699846672518
+Time = 506
+I = 0.3102684700294279
+Time = 4219
+I = 0.3102683184065036
+Time = 41161
+
+
+I = 0.9460822777196942
+Time = 133
+I = 0.9460829911025843
+Time = 1076
+I = 0.9460830624558187
+Time = 10436
+I = 0.9460830694441926
+Time = 93448
+
+I = 0.9460814850669101
+Time = 58
+I = 0.9460829118388792
+Time = 580
+I = 0.9460830545116053
+Time = 5452
+I = 0.9460830688243422
+Time = 56474
+
+I = 0.9460798997467019
+Time = 43
+I = 0.9460827533086662
+Time = 423
+I = 0.9460830386590259
+Time = 4066
+I = 0.9460830672264389
+Time = 42539
+
+
+I = 1.4626603373601892
+Time = 220
+I = 1.4626526050512016
+Time = 1560
+I = 1.4626518316104538
+Time = 9753
+I = 1.4626517563580006
+Time = 91747
+
+I = 1.4626689289074721
+Time = 82
+I = 1.4626534641797948
+Time = 522
+I = 1.4626519177679795
+Time = 5178
+I = 1.4626517625686002
+Time = 52015
+
+I = 1.4626861122689789
+Time = 40
+I = 1.4626551824791449
+Time = 389
+I = 1.4626520895926731
+Time = 3733
+I = 1.4626517798879022
+Time = 37603
+
+
+
+D:\3 course\Parallel\week10_debug\integral\Debug\integral.exe (process 27636) exited with code 0.
+To automatically close the console when debugging stops, enable Tools->Options->Debugging->Automatically close the console when debugging stops.
+Press any key to close this window . . .

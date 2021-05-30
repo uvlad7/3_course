@@ -1,0 +1,156 @@
+BODY {
+	BACKGROUND-COLOR: white; COLOR: black; FONT-FAMILY: verdana,arial,helvetica; FONT-SIZE: 13px
+}
+A:hover {
+	TEXT-DECORATION: underline
+}
+.body {
+	FONT-FAMILY: verdana,arial,helvetica; FONT-SIZE: 13px
+}
+.m1 {
+	FONT-SIZE: 11px
+}
+.m2 {
+	FONT-SIZE: 10px
+}
+TD {
+	FONT-FAMILY: verdana,arial,helvetica; FONT-SIZE: 13px
+}
+P {
+	FONT-FAMILY: verdana,arial,helvetica; FONT-SIZE: 13px
+}
+SPAN {
+	FONT-FAMILY: verdana,arial,helvetica
+}
+A {
+	FONT-FAMILY: verdana,arial,helvetica
+}
+.topnav {
+	BACKGROUND-COLOR: #a40000; COLOR: #ffffff; FONT-SIZE: 10px; FONT-WEIGHT: bold; TEXT-ALIGN: center
+}
+.topnav A {
+	COLOR: #ffffff; TEXT-DECORATION: none
+}
+.termlink {
+	COLOR: #a40000; FONT-SIZE: 10px; FONT-WEIGHT: bold
+}
+.termlink A:hover {
+	COLOR: #ff0000
+}
+.sterm {
+	COLOR: #003366; FONT-SIZE: 10px
+}
+A.sterm:hover {
+	COLOR: #0066bb
+}
+.box1 {
+	BACKGROUND-COLOR: #a40000
+}
+.box2 {
+	BACKGROUND-COLOR: #0078c0
+}
+.boxline {
+	BACKGROUND-COLOR: #e4e4e4
+}
+.boxtitle {
+	COLOR: #ffffff; FONT-SIZE: 12px; FONT-WEIGHT: bold
+}
+A.boxtitle {
+	TEXT-DECORATION: none
+}
+A.boxtitle:hover {
+	TEXT-DECORATION: underline
+}
+.boxtext {
+	FONT-SIZE: 11px
+}
+.boxlink {
+	COLOR: #003366; FONT-SIZE: 11px; TEXT-DECORATION: none
+}
+.boxlink A {
+	TEXT-DECORATION: none
+}
+.boxboldlink {
+	COLOR: #003366; FONT-SIZE: 11px; FONT-WEIGHT: bold; TEXT-DECORATION: none
+}
+.boxredlink {
+	COLOR: #a40000; FONT-SIZE: 11px; TEXT-DECORATION: none
+}
+.boxredhead {
+	COLOR: #a40000; FONT-SIZE: 11px; FONT-WEIGHT: bold; TEXT-DECORATION: none
+}
+.copy {
+	FONT-SIZE: 10px; FONT-WEIGHT: normal
+}
+ADDRESS {
+	FONT-STYLE: italic
+}
+.author {
+	FONT-STYLE: italic
+}
+.inputs {
+	FONT-SIZE: 11px
+}
+.vshead {
+	FONT-SIZE: 10px; FONT-WEIGHT: bold
+}
+.shead {
+	FONT-SIZE: 11px; FONT-WEIGHT: bold
+}
+.bredhead {
+	COLOR: #a40000; FONT-SIZE: 14px; FONT-WEIGHT: bold; TEXT-DECORATION: none
+}
+.article {
+	FONT-SIZE: 17px; FONT-WEIGHT: bold
+}
+.morelink {
+	FONT-SIZE: 11px; TEXT-DECORATION: none
+}
+.morelink A {
+	FONT-SIZE: 11px; TEXT-DECORATION: none
+}
+.link {
+	COLOR: #003366; FONT-WEIGHT: bold; TEXT-DECORATION: none
+}
+.linkr {
+	COLOR: #a40000; FONT-WEIGHT: bold; TEXT-DECORATION: none
+}
+.numlink {
+	FONT-SIZE: 11px; TEXT-DECORATION: none
+}
+.fdir1 {
+	FONT-SIZE: 14px; FONT-WEIGHT: bold; TEXT-DECORATION: none
+}
+.fdir2 {
+	FONT-SIZE: 11px; TEXT-DECORATION: none
+}
+.dir1 {
+	FONT-SIZE: 12px; FONT-WEIGHT: bold; TEXT-DECORATION: none
+}
+.dir2 {
+	FONT-SIZE: 11px; TEXT-DECORATION: none
+}
+UL {
+	LIST-STYLE: square outside
+}
+.sq {
+	LIST-STYLE: square outside
+}
+.wide {
+	FONT-SIZE: 11px; WIDTH: 100%
+}
+.chapter {
+	COLOR: #a40000; FONT-SIZE: 12px; FONT-WEIGHT: bold
+}
+A.chapter {
+	TEXT-DECORATION: none
+}
+.textsm {
+	FONT-SIZE: 11px; TEXT-DECORATION: none
+}
+.linksm {
+	COLOR: #003366; FONT-SIZE: 11px; TEXT-DECORATION: none
+}
+.menu {
+	COLOR: #003366; FONT-SIZE: 12px; TEXT-DECORATION: none
+}

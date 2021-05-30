@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.cell.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.input.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<?import java.lang.Integer?>
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="View"
+      prefHeight="600.0" prefWidth="900.0">
+    <MenuBar fx:id="menuBar">
+        <Menu text="%file">
+            <MenuItem fx:id="create" text="%create" onAction="#actionPerformed">
+                <accelerator>
+                    <KeyCombination fx:value="Shortcut+N"/>
+                </accelerator>
+                <graphic>
+                    <ImageView>
+                        <Image url="icons/create.png"/>
+                    </ImageView>
+                </graphic>
+            </MenuItem>
+            <MenuItem fx:id="open" text="%open" onAction="#actionPerformed">
+                <accelerator>
+                    <KeyCombination fx:value="Shortcut+O"/>
+                </accelerator>
+                <graphic>
+                    <ImageView>
+                        <Image url="icons/open.png"/>
+                    </ImageView>
+                </graphic>
+            </MenuItem>
+            <SeparatorMenuItem/>
+            <MenuItem fx:id="save" text="%save" onAction="#actionPerformed">
+                <accelerator>
+                    <KeyCombination fx:value="Shortcut+S"/>
+                </accelerator>
+                <graphic>
+                    <ImageView>
+                        <Image url="icons/save.png"/>
+                    </ImageView>
+                </graphic>
+            </MenuItem>
+            <MenuItem fx:id="saveAs" text="%saveAs" onAction="#actionPerformed">
+                <accelerator>
+                    <KeyCombination fx:value="Shortcut+Shift+S"/>
+                </accelerator>
+                <graphic>
+                    <ImageView>
+                        <Image url="icons/saveAs.png"/>
+                    </ImageView>
+                </graphic>
+            </MenuItem>
+            <SeparatorMenuItem/>
+            <MenuItem fx:id="settings" text="%settings" onAction="#actionPerformed">
+                <accelerator>
+                    <KeyCombination fx:value="Shortcut+Alt+S"/>
+                </accelerator>
+                <graphic>
+                    <ImageView>
+                        <Image url="icons/settings.png"/>
+                    </ImageView>
+                </graphic>
+            </MenuItem>
+        </Menu>
+        <Menu text="%edit">
+            <MenuItem fx:id="add" text="%add" onAction="#actionPerformed">
+                <accelerator>
+                    <KeyCombination fx:value="Shortcut+Shift+N"/>
+                </accelerator>
+                <graphic>
+                    <ImageView>
+                        <Image url="icons/add.png"/>
+                    </ImageView>
+                </graphic>
+            </MenuItem>
+            <MenuItem fx:id="delete" text="%delete" onAction="#actionPerformed">
+                <accelerator>
+                    <KeyCombination fx:value="Delete"/>
+                </accelerator>
+                <graphic>
+                    <ImageView>
+                        <Image url="icons/delete.png"/>
+                    </ImageView>
+                </graphic>
+            </MenuItem>
+            <SeparatorMenuItem/>
+            <MenuItem fx:id="filter" text="%filter" onAction="#actionPerformed">
+                <accelerator>
+                    <KeyCombination fx:value="Shortcut+F"/>
+                </accelerator>
+                <graphic>
+                    <ImageView>
+                        <Image url="icons/filter.png"/>
+                    </ImageView>
+                </graphic>
+            </MenuItem>
+        </Menu>
+    </MenuBar>
+    <AnchorPane>
+        <TableView fx:id="table" AnchorPane.leftAnchor="0" AnchorPane.bottomAnchor="0"
+                   AnchorPane.rightAnchor="0"
+                   AnchorPane.topAnchor="0" editable="true">
+            <placeholder>
+                <Label text="%dontTry">
+                    <font>
+                        <Font size="50"/>
+                    </font>
+                </Label>
+            </placeholder>
+            <columnResizePolicy>
+                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+            </columnResizePolicy>
+            <prefHeight>
+                <Integer fx:constant="MAX_VALUE"/>
+            </prefHeight>
+            <prefWidth>
+                <Integer fx:constant="MAX_VALUE"/>
+            </prefWidth>
+            <columns>
+                <TableColumn fx:id="number" text="%number" minWidth="50"
+                             prefWidth="${table.width*0.1}">
+                    <cellValueFactory>
+                        <PropertyValueFactory property="number"/>
+                    </cellValueFactory>
+                </TableColumn>
+                <TableColumn fx:id="from" text="%from" minWidth="100" prefWidth="${table.width*0.3}">
+                    <cellValueFactory>
+                        <PropertyValueFactory property="from"/>
+                    </cellValueFactory>
+                </TableColumn>
+                <TableColumn fx:id="to" text="%to" minWidth="100" prefWidth="${table.width*0.3}">
+                    <cellValueFactory>
+                        <PropertyValueFactory property="to"/>
+                    </cellValueFactory>
+                </TableColumn>
+                <TableColumn fx:id="departure" text="%departure" minWidth="75"
+                             prefWidth="${table.width*0.1}">
+                    <cellValueFactory>
+                        <PropertyValueFactory property="departure"/>
+                    </cellValueFactory>
+                </TableColumn>
+                <TableColumn fx:id="arrival" text="%arrival" minWidth="75"
+                             prefWidth="${table.width*0.1}">
+                    <cellValueFactory>
+                        <PropertyValueFactory property="arrival"/>
+                    </cellValueFactory>
+                </TableColumn>
+                <TableColumn fx:id="cost" text="%cost" minWidth="75"
+                             prefWidth="${table.width*0.1}">
+                    <cellValueFactory>
+                        <PropertyValueFactory property="cost"/>
+                    </cellValueFactory>
+                </TableColumn>
+            </columns>
+        </TableView>
+    </AnchorPane>
+</VBox>

@@ -1,0 +1,6 @@
+<!DOCTYPE ClientRequest
+        [
+                <!ELEMENT ClientRequest (message,request)>
+                <!ELEMENT message (#PCDATA)>
+                <!ELEMENT request (#PCDATA)>
+                ]>

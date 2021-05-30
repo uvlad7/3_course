@@ -1,0 +1,53 @@
+1. Описать решение задачи с использованием модели изготовитель-потребитель:
+	Поток-изготовитель читает файл построчно, потоки потребители получают строку и находят число повторений искомого слова, инкрементируют разделяемую глобальную переменную.
+
+2. Написать псевдокод для решения задачи
+
+//количество дочерних потоков-потребителей
+#define k 2
+CRITICAL_SECTION cs;
+HANDLE hThreads[k + 1];
+// прочитан ли файл?
+bool eof = false;
+int wordCount = 0;
+string word;
+queue<string> strings;
+
+unsigned int __stdcall Producer(LPVOID pvParam) {
+	Цикл(пока не конец файла)
+		Выполняем действия
+		EnterCriticalSection(&cs);
+		queue.push(line);
+		LeaveCriticalSection(&cs);
+	КонецЦикла
+	eof = true;
+	return 0;
+}
+
+
+unsigned int __stdcall Consumer(LPVOID pvParam) {
+	while (!eof) {
+		if (!strings.empty()) {
+			EnterCriticalSection(&cs);
+			if (strings.empty()) { // двойная проверка т. к. состояние очереди могло быть изменено
+				LeaveCriticalSection(&cs);
+			}
+			else {
+				Получаем строку из очереди
+				LeaveCriticalSection(&cs);
+				делим на слова, считаем кол-во искомых
+				EnterCriticalSection(&cs);
+				wordCount += n;
+				LeaveCriticalSection(&cs);
+			}
+		}
+	}
+	return 0;
+}
+int main()
+{
+	создание потока-производителя
+	создание потоков потребителей
+	ожидание завершения дочерних потоков
+	вывод результата
+}	

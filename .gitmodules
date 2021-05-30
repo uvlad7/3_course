@@ -1,0 +1,3 @@
+[submodule "TP/MyAwesomePaint"]
+	path = TP/MyAwesomePaint
+	url = https://github.com/uvlad7/MyAwesomePaint

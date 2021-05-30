@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<words>
+    <word>
+        <id>1</id>
+        <word>Собака</word>
+    </word>
+    <word>
+        <id>2</id>
+        <word>Dog</word>
+    </word>
+    <word>
+        <id>4</id>
+        <word>Кот</word>
+    </word>
+    <word>
+        <id>5</id>
+        <word>Cat</word>
+    </word>
+</words>

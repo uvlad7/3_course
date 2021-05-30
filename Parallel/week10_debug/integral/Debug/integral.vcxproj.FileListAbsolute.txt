@@ -1,0 +1,2 @@
+D:\3 course\Parallel\week10_debug\integral\Debug\integral.exe
+D:\3 course\Parallel\week10_debug\integral\Debug\integral.pdb

@@ -1,0 +1,35 @@
+﻿  complex.cpp
+D:\3 course\Labs\KW3.0_Stack\complex.cpp(1): warning C4603:  '_CRT_SECURE_NO_WARNINGS': macro is not defined or definition is different after precompiled header use
+D:\3 course\Labs\KW3.0_Stack\complex.cpp(1): message :  Add macro to precompiled header instead of defining here
+  kr.cpp
+D:\3 course\Labs\KW3.0_Stack\complex.cpp(2): message :  use of precompiled header
+D:\3 course\Labs\KW3.0_Stack\model.h(207,2): warning C4018:  '<': signed/unsigned mismatch
+D:\3 course\Labs\KW3.0_Stack\model.h(204): message :  while compiling class template member function 'void Stack<T>::Pop(void)'
+D:\3 course\Labs\KW3.0_Stack\model.h(204): message :         with
+D:\3 course\Labs\KW3.0_Stack\model.h(204): message :         [
+D:\3 course\Labs\KW3.0_Stack\model.h(204): message :             T=Complex
+D:\3 course\Labs\KW3.0_Stack\model.h(204): message :         ]
+D:\3 course\Labs\KW3.0_Stack\controller.h(90): message :  see reference to function template instantiation 'void Stack<T>::Pop(void)' being compiled
+D:\3 course\Labs\KW3.0_Stack\controller.h(90): message :         with
+D:\3 course\Labs\KW3.0_Stack\controller.h(90): message :         [
+D:\3 course\Labs\KW3.0_Stack\controller.h(90): message :             T=Complex
+D:\3 course\Labs\KW3.0_Stack\controller.h(90): message :         ]
+D:\3 course\Labs\KW3.0_Stack\controller.h(10): message :  see reference to class template instantiation 'Stack<T>' being compiled
+D:\3 course\Labs\KW3.0_Stack\controller.h(10): message :         with
+D:\3 course\Labs\KW3.0_Stack\controller.h(10): message :         [
+D:\3 course\Labs\KW3.0_Stack\controller.h(10): message :             T=Complex
+D:\3 course\Labs\KW3.0_Stack\controller.h(10): message :         ]
+D:\3 course\Labs\KW3.0_Stack\model.h(187,2): warning C4018:  '<': signed/unsigned mismatch
+D:\3 course\Labs\KW3.0_Stack\model.h(179): message :  while compiling class template member function 'void Stack<T>::Push(const T &)'
+D:\3 course\Labs\KW3.0_Stack\model.h(179): message :         with
+D:\3 course\Labs\KW3.0_Stack\model.h(179): message :         [
+D:\3 course\Labs\KW3.0_Stack\model.h(179): message :             T=Complex
+D:\3 course\Labs\KW3.0_Stack\model.h(179): message :         ]
+  view.cpp
+  Generating Code...
+D:\3 course\Labs\KW3.0_Stack\controller.h(80): message :  see reference to function template instantiation 'void Stack<T>::Push(const T &)' being compiled
+D:\3 course\Labs\KW3.0_Stack\controller.h(80): message :         with
+D:\3 course\Labs\KW3.0_Stack\controller.h(80): message :         [
+D:\3 course\Labs\KW3.0_Stack\controller.h(80): message :             T=Complex
+D:\3 course\Labs\KW3.0_Stack\controller.h(80): message :         ]
+  kr.vcxproj -> D:\3 course\Labs\KW3.0_Stack\Debug\KR.exe

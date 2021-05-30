@@ -1,0 +1,2 @@
+D:\3 course\Parallel\week_6_2_posix\count_word_posix\Debug\count_word_posix.exe
+D:\3 course\Parallel\week_6_2_posix\count_word_posix\Debug\count_word_posix.pdb

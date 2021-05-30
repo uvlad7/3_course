@@ -1,0 +1,8 @@
+app\dao\DataConnection.class
+app\entity\Word.class
+app\servlet\MainServlet$1.class
+app\entity\Record.class
+app\dao\impl\MySQLDataConnection.class
+app\servlet\MainServlet.class
+app\entity\Vocabulary.class
+app\data\SqlConnector.class

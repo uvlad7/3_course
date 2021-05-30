@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<Dialog xmlns="http://javafx.com/javafx"
+        xmlns:fx="http://javafx.com/fxml"
+        fx:controller="sample.controllers.VocabularyDialog" fx:id="dialog"
+        title="VocabularyDialog">
+    <dialogPane>
+        <DialogPane>
+            <content>
+                <GridPane hgap="10" vgap="10">
+                    <padding>
+                        <Insets top="20" right="10" bottom="10" left="10"/>
+                    </padding>
+                    <Label text="Name" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                    <TextField fx:id="name" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                    <Label text="Is Explanatory" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                    <CheckBox fx:id="isExplanatory" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                </GridPane>
+            </content>
+            <ButtonType text="OK" buttonData="OK_DONE"/>
+            <ButtonType text="Cancel" buttonData="CANCEL_CLOSE"/>
+        </DialogPane>
+    </dialogPane>
+</Dialog>

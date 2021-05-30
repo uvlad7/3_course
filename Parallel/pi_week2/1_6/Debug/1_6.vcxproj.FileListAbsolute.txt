@@ -1,0 +1,2 @@
+D:\3 course\Parallel\pi_week2\1_6\Debug\1_6.exe
+D:\3 course\Parallel\pi_week2\1_6\Debug\1_6.pdb
